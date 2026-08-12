@@ -1,3 +1,6 @@
+
+
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -88,7 +91,7 @@ padding:7px 12px;color:#14577f;font-size:14px
 <span>Thanh toán mỗi kỳ (đã bao gồm phí thu hộ) ~ <b id="plPillPayment">0 VND</b></span>
 </div>
 <div class="schedule-wrap" id="plScheduleWrap">
-<div class="note" style="margin-bottom:8px"><i class="fa-solid fa-table"></i><b>Lịch trả nợ chi tiết - Đây chỉ là bảng tham khảo, lãi suất tùy theo hồ sơ và chính sách hiện tại.</b></div>
+<div class="note" style="margin-bottom:8px"><i class="fa-solid fa-table"></i><b>Lịch trả nợ chi tiết — đối chiếu theo Excel, đủ 24 kỳ</b></div>
 <table class="schedule" id="plSchedule"></table>
 </div>
 <div class="bottom"><label class="save"><input id="plSave" type="checkbox" checked> Lưu thông tin nhập (LocalStorage)</label><button class="today" onclick="quickDate()"><i class="fa-solid fa-calendar-day"></i> Điền nhanh hôm nay</button></div>
@@ -123,8 +126,8 @@ padding:7px 12px;color:#14577f;font-size:14px
 <div class="donate-qr-wrap">
 <div class="donate-qr-title"><i class="fa-solid fa-qrcode"></i> QUÉT MÃ QR ĐỂ ỦNG HỘ</div>
 <div class="donate-qr">
-<img src="https://i.ibb.co/xqDgQ9Jq/1786518094844.png" alt="Mã QR ngân hàng để ủng hộ" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-<div class="qr-placeholder"><i class="fa-solid fa-qrcode"></i><span>https://i.ibb.co/xqDgQ9Jq/1786518094844.png
+<img src="https://i.ibb.co/Psb85P1M/1786500226499.png" alt="Mã QR ngân hàng để ủng hộ" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+<div class="qr-placeholder"><i class="fa-solid fa-qrcode"></i><span>https://i.ibb.co/Psb85P1M/1786500226499.png
 <b>assets/qr-ngan-hang.png</b></span></div>
 </div>
 <div class="donate-hint">Mở ứng dụng ngân hàng → Quét QR → Nhập số tiền muốn ủng hộ.</div>
@@ -143,7 +146,7 @@ padding:7px 12px;color:#14577f;font-size:14px
 </main>
 
 
-<footer class="footer"><span><i class="fa-solid fa-shield-halved"></i>Bảo mật thông tin tuyệt đối</span><span>© 2026 Tính Lãi Suất. All rights reserved.</span><span><i class="fa-regular fa-heart"></i>Được tạo bởi Mr.Thiên</span></footer>
+<footer class="footer"><span><i class="fa-solid fa-shield-halved"></i>Bảo mật thông tin tuyệt đối</span><span>© 2025 Tính Lãi Suất. All rights reserved.</span><span><i class="fa-regular fa-heart"></i>Cảm ơn bạn đã sử dụng và ủng hộ!</span></footer>
 
 
 <script>
@@ -231,8 +234,8 @@ window.PL_META={principal,loan,insurance,emi,totalInterest,totalPaid,factorSum};
 return true;
 }
 function renderPL(rows,principal,emi,insurance){
-let h='<thead><tr><th>Kỳ</th><th>Ngày đến hạn</th><th>Số ngày</th><th>Dư nợ đầu kỳ</th><th>Gốc</th><th>Lãi</th><th>EMI khoản vay</th><th>Phí thu hộ</th><th>Tổng đóng</th><th>Dư nợ cuối kỳ</th></tr></thead><tbody>';
-rows.forEach(r=>h+=`<tr><td>${r.i}</td><td>${r.due.toLocaleDateString('vi-VN')}</td><td>${r.days}</td><td>${fmt(r.balance)}</td><td>${fmt(r.principal)}</td><td>${fmt(r.interest)}</td><td>${fmt(r.payment)}</td><td>${fmt(r.collectionFee)}</td><td>${fmt(r.customerPayment)}</td><td>${fmt(r.closing)}</td></tr>`);
+let h='<thead><tr><th>Kỳ</th><th>Ngày đến hạn</th><th>EMI khoản vay</th><th>Tổng đóng</th><th>Dư nợ cuối kỳ</th></tr></thead><tbody>';
+rows.forEach(r=>h+=`<tr><td>${r.i}</td><td>${r.due.toLocaleDateString('vi-VN')}</td><td>${fmt(r.payment)}</td><td>${fmt(r.customerPayment)}</td><td>${fmt(r.closing)}</td></tr>`);
 h+='</tbody>'; $('plSchedule').innerHTML=h;$('plScheduleWrap').style.display='block';
 }
 function excelPL(){
