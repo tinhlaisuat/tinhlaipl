@@ -54,6 +54,19 @@ padding:7px 12px;color:#14577f;font-size:14px
 
 /* ===== DONATE ===== */
 .donate-card{text-align:center;padding:30px 28px 34px}.donate-icon{width:70px;height:70px;margin:0 auto 10px;border-radius:50%;background:#eaf4ff;display:flex;align-items:center;justify-content:center}.donate-icon i{font-size:36px;color:#0b69dc}.donate-card h2{margin:5px 0 10px;font-size:25px;color:#123766}.donate-lead,.donate-thanks{max-width:820px;margin:0 auto;color:#506985;line-height:1.75;font-size:14px}.donate-thanks{margin-top:6px;font-weight:700;color:#145b8e}.donate-box{margin:24px auto 0;max-width:900px;display:grid;grid-template-columns:360px 1fr;gap:22px;text-align:left;background:linear-gradient(180deg,#f3f9ff,#edf6ff);border:1px solid #d7e5f2;border-radius:14px;padding:20px}.donate-qr-wrap{text-align:center}.donate-qr-title{font-size:15px;font-weight:800;color:#075fc8;margin-bottom:12px}.donate-qr{width:270px;height:270px;margin:0 auto;background:#fff;border:1px solid #d8e3ee;border-radius:12px;padding:12px;box-shadow:0 5px 18px #173f6812;display:flex;align-items:center;justify-content:center}.donate-qr img{display:block;width:100%;height:100%;object-fit:contain;border-radius:5px}.qr-placeholder{width:100%;height:100%;border:2px dashed #91b9db;border-radius:8px;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#5b7793;text-align:center;font-size:12px}.qr-placeholder i{font-size:54px;color:#0b69dc}.qr-placeholder b{color:#075fc8}.donate-hint{margin-top:10px;text-align:center;color:#627894;font-size:12px}.donate-info{background:#fff;border:1px solid #dce6f0;border-radius:11px;padding:18px}.donate-info h3{margin:0 0 14px;color:#123d70;font-size:17px}.donate-info h3 i{color:#0b69dc;margin-right:7px}.bank-row{display:flex;justify-content:space-between;gap:18px;padding:11px 0;border-bottom:1px solid #edf1f5;font-size:13px}.bank-row span{color:#667b94}.bank-row strong{text-align:right;color:#123d70}.donate-note{margin-top:15px;padding:11px 12px;border-radius:9px;background:#eef7ff;color:#49647e;font-size:12px;line-height:1.6}.donate-note i{color:#0b69dc;margin-right:5px}@media(max-width:750px){.donate-box{grid-template-columns:1fr;padding:14px}.donate-qr{width:240px;height:240px}.donate-card h2{font-size:20px}.bank-row{flex-direction:column;gap:4px}.bank-row strong{text-align:left}}
+
+/* ===== DONATE ACTIONS + ZALO FLOAT ===== */
+.donate-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.donate-action-btn{flex:1;min-width:160px;height:46px;border:0;border-radius:9px;font:700 13px "Be Vietnam Pro";cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.donate-action-btn.primary{background:#0868d9;color:#fff}
+.donate-action-btn.secondary{background:#fff;color:#123d70;border:1px solid #cfdbe8}
+.donate-action-btn:hover{filter:brightness(1.03);transform:translateY(-1px)}
+.zalo-float{position:fixed;right:20px;bottom:20px;z-index:2147483000;width:58px;height:58px;border-radius:50%;background:#0b74e5;color:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,.24);font:800 18px Arial,sans-serif;transition:.2s transform,.2s box-shadow}
+.zalo-float:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 10px 28px rgba(0,0,0,.3)}
+.zalo-float::after{content:"Chat Zalo";position:absolute;right:68px;white-space:nowrap;background:#102d60;color:#fff;padding:7px 10px;border-radius:7px;font:700 12px "Be Vietnam Pro";opacity:0;pointer-events:none;transform:translateY(4px);transition:.2s}
+.zalo-float:hover::after{opacity:1;transform:translateY(0)}
+@media(max-width:650px){.zalo-float{right:14px;bottom:14px;width:54px;height:54px}.zalo-float::after{display:none}.donate-actions{flex-direction:column}.donate-action-btn{width:100%}}
+
 </style>
 </head>
 <body>
@@ -159,12 +172,28 @@ padding:7px 12px;color:#14577f;font-size:14px
 <div class="bank-row"><span>Số tài khoản</span><strong>0964307247</strong></div>
 <div class="bank-row"><span>Nội dung</span><strong>UNGHO ADMIN TLS</strong></div>
 <div class="donate-note"><i class="fa-solid fa-circle-info"></i> Vui lòng kiểm tra đúng thông tin trước khi chuyển khoản. Xin chân thành cảm ơn anh chị em đã đồng hành!</div>
+<div class="donate-actions">
+  <button class="donate-action-btn primary" type="button" onclick="saveDonateQR()">
+    <i class="fa-solid fa-download"></i> LƯU MÃ QR
+  </button>
+  <button class="donate-action-btn secondary" type="button" onclick="copyDonateAccount()">
+    <i class="fa-regular fa-copy"></i> SAO CHÉP STK
+  </button>
+  <button class="donate-action-btn secondary" type="button" onclick="copyDonateContent()">
+    <i class="fa-regular fa-copy"></i> SAO CHÉP NỘI DUNG
+  </button>
+</div>
 </div>
 </div>
 </div>
 </section>
 </main>
 
+
+
+<a class="zalo-float" href="https://zalo.me/0964307247" target="_blank" rel="noopener noreferrer" aria-label="Chat Zalo">
+  Zalo
+</a>
 
 <footer class="footer"><span><i class="fa-solid fa-shield-halved"></i>Bảo mật thông tin tuyệt đối</span><span>© 2026 Tính Lãi Suất. All rights reserved.</span><span><i class="fa-regular fa-heart"></i>Được tạo bởi Mr.Thiên!</span></footer>
 
@@ -193,6 +222,53 @@ function setDefaultDates(){let d=new Date(),n=new Date(d.getTime()+30*86400000);
 function quickDate(){setDefaultDates()}
 async function calcTopup(){const emiCurrent=num($('tuEMI').value),rate=num($('tuRate').value),grace=parseInt($('tuGrace').value||0),loan=num($('tuLoan').value),insRate=num($('tuInsRate').value),insurance=$('tuInsurance').value;if(!loan||rate<=0){alert('Vui lòng nhập Số tiền vay TOPUP và Lãi suất.');return false}if(grace<0){alert('Số kỳ ân hạn không hợp lệ.');return false}try{const response=await apiPost('/topup',{emiCurrent,rate,grace,loan,insRate,insurance});const result=response.result,rows=result.rows||[];window.TOP_ROWS=rows;window.TOP_META={loan:result.loan,insurance:result.insurance,totalLoan:result.totalLoan,maxEMI:result.maxEMI,graceEMI:result.grace31,emiCurrent};let h=`<div class="top-pills"><span>LOAN: <b>${fmt(result.loan)} VND</b></span><span>INS: <b>${fmt(result.insurance)} VND</b></span><span>Tổng tiền vay: <b>${fmt(result.totalLoan)} VND</b></span><span>Max EMI: <b>${fmt(result.maxEMI)} VND</b></span><span>EMI ân hạn 31 ngày: <b>${fmt(result.grace31)} VND</b></span></div>`;h+=`<div class="grace-title">Số tiền mỗi tháng thanh toán trong thời gian ân hạn</div><div class="grace-pills"><span>31 ngày: <b>${fmt(result.grace31)}</b></span><span>30 ngày: <b>${fmt(result.grace30)}</b></span><span>29 ngày: <b>${fmt(result.grace29)}</b></span><span>28 ngày: <b>${fmt(result.grace28)}</b></span></div>`;h+='<table class="top-table"><thead><tr><th>Kỳ hạn vay</th><th>EMI trong ân hạn</th><th>EMI sau ân hạn</th><th>Số tháng góp</th><th>Trạng thái</th><th>Tổng gốc + lãi</th><th>Tổng lãi</th><th>Lãi/tháng</th></tr></thead><tbody>';rows.forEach(r=>{h+=`<tr><td>${r.t}</td><td>${fmt(result.grace31)}</td><td>${r.paymentAfter!=null?fmt(r.paymentAfter):'N/A'}</td><td>${r.afterGrace}</td><td class="${r.status==='OK'?'ok':'na'}">${r.status}</td><td>${r.totalGL!=null?fmt(r.totalGL)+' đ':'N/A'}</td><td>${r.interest!=null?fmt(r.interest)+' đ':'N/A'}</td><td>${r.interestMonth!=null?fmt(r.interestMonth)+' đ':'N/A'}</td></tr>`});h+='</tbody></table><div class="note" style="margin-top:12px"><i class="fa-solid fa-circle-info"></i>Kết quả được tính tại máy chủ bảo mật và trả về website để hiển thị.</div>';$('topSummary').innerHTML=h;$('topResult').style.display='block';return true}catch(e){if(e.message!=='UNAUTHORIZED')alert('Không tính được TOPUP: '+e.message);return false}}
 function resetTopup(){$('tuEMI').value='2.536.000';$('tuLoan').value='20.000.000';$('tuRate').value='41';$('tuGrace').value='8';$('tuInsurance').value='YES';$('tuInsRate').value='7,7';$('topResult').style.display='none';window.TOP_ROWS=null}
+
+async function saveDonateQR(){
+  const img=document.querySelector('.donate-qr img');
+  if(!img||!img.src){alert('Không tìm thấy mã QR.');return;}
+  try{
+    const res=await fetch(img.src,{mode:'cors'});
+    if(!res.ok)throw new Error();
+    const blob=await res.blob();
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='VietQR_ung_ho_admin_TLS.png';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }catch(e){
+    // Fallback: mở ảnh QR trong tab mới để người dùng có thể lưu thủ công
+    window.open(img.src,'_blank','noopener');
+  }
+}
+
+async function copyTextDonate(value,successMessage){
+  try{
+    await navigator.clipboard.writeText(value);
+    alert(successMessage);
+  }catch(e){
+    const ta=document.createElement('textarea');
+    ta.value=value;
+    ta.style.position='fixed';
+    ta.style.opacity='0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+    alert(successMessage);
+  }
+}
+
+function copyDonateAccount(){
+  copyTextDonate('0964307247','Đã sao chép số tài khoản: 0964307247');
+}
+
+function copyDonateContent(){
+  copyTextDonate('UNGHO ADMIN TLS','Đã sao chép nội dung chuyển khoản: UNGHO ADMIN TLS');
+}
+
 window.addEventListener('DOMContentLoaded',()=>{setDefaultDates();const s=localStorage.getItem('plData');if(s)try{let x=JSON.parse(s);$('plDisb').value=x.disb||$('plDisb').value;$('plFirst').value=x.first||$('plFirst').value;$('plLoan').value=x.loan||'';$('plIns').value=x.ins||'7,7';$('plRate').value=x.rate||'52';$('plTenure').value=x.tenure||24}catch(e){}});
 </script>
 
