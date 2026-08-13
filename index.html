@@ -2,6 +2,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -168,259 +169,35 @@ padding:7px 12px;color:#14577f;font-size:14px
 <footer class="footer"><span><i class="fa-solid fa-shield-halved"></i>Bảo mật thông tin tuyệt đối</span><span>© 2026 Tính Lãi Suất. All rights reserved.</span><span><i class="fa-regular fa-heart"></i>Được tạo bởi Mr.Thiên!</span></footer>
 
 
+
+
 <script>
+const API_BASE='https://tinh-lai-api.thien-miraeasset.workers.dev';
+const TOKEN_KEY='tlsAuthToken';
 const $=id=>document.getElementById(id);
-const fmt=n=>Math.round(n).toLocaleString('vi-VN');
+const fmt=n=>Math.round(Number(n)||0).toLocaleString('vi-VN');
 const num=s=>Number(String(s??'').replace(/\./g,'').replace(/,/g,'.'))||0;
 function moneyInput(el){let v=String(el.value).replace(/\D/g,'');el.value=v?Number(v).toLocaleString('vi-VN'):''}
 function page(id,btn){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));btn.classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}
-function parseDate(v){let [y,m,d]=v.split('-').map(Number);return new Date(y,m-1,d)}
 function iso(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
-function addMonthExcel(d){return new Date(d.getFullYear(),d.getMonth()+1,d.getDate())}
-function days(a,b){return Math.max(0,Math.round((b-a)/86400000))}
-function round0(x){return Math.round(x)}
-function roundup(x){return Math.ceil(x)}
-function calcPL(){
-const loan=num($('plLoan').value), insPct=num($('plIns').value), rate=num($('plRate').value)/100, tenure=parseInt($('plTenure').value||0);
-if(!loan||!tenure||rate<=0){alert('Vui lòng nhập đủ Số tiền vay, Lãi suất và Số kỳ vay.');return false}
-if(!$('plDisb').value||!$('plFirst').value){alert('Vui lòng nhập Ngày Giải Ngân và Ngày Ký Đóng Đầu Tiên.');return false}
-
-
-// ===== BÁM ĐÚNG CÔNG THỨC FILE EXCEL PL =====
-// Insurance = ROUND(Loan * Insurance%, 0)
-// Total loan = Loan + Insurance
-// Annuity factor: cộng dồn 1 / (1 + lãi năm / 365 * số ngày)
-// EMI = ROUNDUP(Total loan / Annuity factor, 0)
-// Lãi từng kỳ = ROUND(Dư nợ đầu kỳ * lãi năm / 365 * số ngày, 0)
-// Gốc = EMI - Lãi; kỳ cuối tất toán toàn bộ dư nợ còn lại.
-// Phí thu hộ 12.000đ chỉ cộng vào tiền khách thực đóng.
-const insurance=Math.round(loan*insPct/100), principal=loan+insurance;
-const disb=parseDate($('plDisb').value), first=parseDate($('plFirst').value);
-
-
-let previousDate=new Date(disb), dueDate=new Date(first);
-let cumulativeFactor=1, factorSum=0, rows=[];
-
-
-for(let i=1;i<=tenure;i++){
-const nd=days(previousDate,dueDate);
-const j=1+(rate/365)*nd;
-cumulativeFactor=cumulativeFactor/j;
-factorSum+=cumulativeFactor;
-rows.push({i,due:new Date(dueDate),days:nd,balance:0,principal:0,interest:0,payment:0,collectionFee:12000,customerPayment:0,closing:0});
-previousDate=new Date(dueDate);
-dueDate=addMonthExcel(dueDate);
-}
-
-
-if(factorSum<=0){alert('Không tính được hệ số khoản vay.');return false}
-const emi=Math.ceil(principal/factorSum);
-let balance=Math.round(principal), totalInterest=0,totalPaid=0;
-
-
-rows.forEach((r,index)=>{
-r.balance=Math.round(balance);
-r.interest=Math.round(balance*rate/365*r.days);
-
-
-if(index===rows.length-1){
-// Excel: kỳ cuối lấy toàn bộ dư nợ đầu kỳ làm phần gốc.
-r.principal=Math.round(balance);
-}else{
-r.principal=Math.max(0,Math.round(emi-r.interest));
-r.principal=Math.min(r.principal,Math.round(balance));
-}
-
-
-r.payment=Math.round(r.principal+r.interest);
-balance=Math.max(0,Math.round(balance-r.principal));
-r.closing=balance;
-r.customerPayment=r.payment+r.collectionFee;
-totalInterest+=r.interest;
-totalPaid+=r.payment;
-});
-
-
-$('plPillTotal').textContent=fmt(principal)+' VND';
-$('plPillPeriods').textContent=tenure;
-$('plPillPayment').textContent=fmt(emi+12000)+' VND';
-renderPL(rows,principal,emi,insurance);
-
-
-if($('plSave').checked)localStorage.setItem('plData',JSON.stringify({disb:$('plDisb').value,first:$('plFirst').value,loan:$('plLoan').value,ins:$('plIns').value,rate:$('plRate').value,tenure:$('plTenure').value}));
-window.PL_ROWS=rows;
-window.PL_META={principal,loan,insurance,emi,totalInterest,totalPaid,factorSum};
-return true;
-}
-function renderPL(rows,principal,emi,insurance){
-let h='<thead><tr><th>Kỳ</th><th>Ngày đến hạn</th><th>EMI khoản vay</th><th>Tổng đóng</th><th>Dư nợ cuối kỳ</th></tr></thead><tbody>';
-rows.forEach(r=>h+=`<tr><td>${r.i}</td><td>${r.due.toLocaleDateString('vi-VN')}</td><td>${fmt(r.payment)}</td><td>${fmt(r.customerPayment)}</td><td>${fmt(r.closing)}</td></tr>`);
-h+='</tbody>'; $('plSchedule').innerHTML=h;$('plScheduleWrap').style.display='block';
-}
-function excelPL(){
-if(!window.PL_ROWS){calcPL();if(!window.PL_ROWS)return}
-const data=window.PL_ROWS.map(r=>({'Kỳ':r.i,'Ngày đến hạn':r.due.toLocaleDateString('vi-VN'),'Số ngày':r.days,'Dư nợ gốc':r.balance,'Gốc':r.principal,'Lãi':r.interest,'EMI':r.payment,'Dư nợ cuối kỳ':r.closing}));
-const ws=XLSX.utils.json_to_sheet(data),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Lịch trả nợ');XLSX.writeFile(wb,'Tinh_Lai_PL.xlsx');
-}
-function csvPL(){
-if(!window.PL_ROWS)calcPL();if(!window.PL_ROWS)return;
-let csv='\ufeffKỳ,Ngày đến hạn,Số ngày,Dư nợ gốc,Gốc,Lãi,EMI,Dư nợ cuối kỳ\n';
-window.PL_ROWS.forEach(r=>csv+=`${r.i},${r.due.toLocaleDateString('vi-VN')},${r.days},${r.balance},${r.principal},${r.interest},${r.payment},${r.closing}\n`);
-let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='Tinh_Lai_PL.csv';a.click();
-}
-function pdfPL(){if(!window.PL_ROWS)calcPL();if(!window.PL_ROWS)return;html2pdf().set({margin:6,filename:'Tinh_Lai_PL.pdf',html2canvas:{scale:1.5},jsPDF:{orientation:'landscape',unit:'mm',format:'a4'}}).from($('plScheduleWrap')).save()}
+function dueDateFromApi(v){let [y,m,d]=String(v).split('-').map(Number);return new Date(y,m-1,d)}
+function showPasswordLock(message=''){localStorage.removeItem(TOKEN_KEY);let lock=$('sitePasswordLock');lock.style.display='flex';lock.style.pointerEvents='auto';$('sitePasswordError').textContent=message||'Phiên đăng nhập đã hết hạn. Vui lòng nhập lại mật khẩu!';$('sitePasswordError').style.display=message?'block':'none';setTimeout(()=>$('sitePasswordInput').focus(),50)}
+async function apiPost(path,body){const token=localStorage.getItem(TOKEN_KEY)||'';const res=await fetch(API_BASE+path,{method:'POST',headers:{'Content-Type':'application/json',...(token?{'Authorization':'Bearer '+token}:{})},body:JSON.stringify(body)});let data={};try{data=await res.json()}catch(e){}if(res.status===401&&path!='/login'){showPasswordLock('Phiên đăng nhập đã hết hạn. Vui lòng nhập lại mật khẩu!');throw new Error('UNAUTHORIZED')}if(!res.ok)throw new Error(data.error||'Không thể kết nối máy chủ.');return data}
+async function calcPL(){const loan=num($('plLoan').value),insPct=num($('plIns').value),rate=num($('plRate').value),tenure=parseInt($('plTenure').value||0);if(!loan||!tenure||rate<=0){alert('Vui lòng nhập đủ Số tiền vay, Lãi suất và Số kỳ vay.');return false}if(!$('plDisb').value||!$('plFirst').value){alert('Vui lòng nhập Ngày Giải Ngân và Ngày Ký Đóng Đầu Tiên.');return false}try{const response=await apiPost('/pl',{loan,insPct,rate,tenure,disb:$('plDisb').value,first:$('plFirst').value});const result=response.result;const rows=(result.rows||[]).map(r=>({...r,due:dueDateFromApi(r.due)}));$('plPillTotal').textContent=fmt(result.principal)+' VND';$('plPillPeriods').textContent=tenure;$('plPillPayment').textContent=fmt(result.customerEmi)+' VND';renderPL(rows);if($('plSave').checked)localStorage.setItem('plData',JSON.stringify({disb:$('plDisb').value,first:$('plFirst').value,loan:$('plLoan').value,ins:$('plIns').value,rate:$('plRate').value,tenure:$('plTenure').value}));window.PL_ROWS=rows;window.PL_META={principal:result.principal,loan:result.loan,insurance:result.insurance,emi:result.emi};return true}catch(e){if(e.message!=='UNAUTHORIZED')alert('Không tính được PL: '+e.message);return false}}
+function renderPL(rows){let h='<thead><tr><th>Kỳ</th><th>Ngày đến hạn</th><th>EMI khoản vay</th><th>Tổng đóng</th><th>Dư nợ cuối kỳ</th></tr></thead><tbody>';rows.forEach(r=>h+=`<tr><td>${r.i}</td><td>${r.due.toLocaleDateString('vi-VN')}</td><td>${fmt(r.payment)}</td><td>${fmt(r.customerPayment)}</td><td>${fmt(r.closing)}</td></tr>`);h+='</tbody>';$('plSchedule').innerHTML=h;$('plScheduleWrap').style.display='block'}
+async function excelPL(){if(!window.PL_ROWS){const ok=await calcPL();if(!ok||!window.PL_ROWS)return}const data=window.PL_ROWS.map(r=>({'Kỳ':r.i,'Ngày đến hạn':r.due.toLocaleDateString('vi-VN'),'Số ngày':r.days,'Dư nợ gốc':r.balance,'Gốc':r.principal,'Lãi':r.interest,'EMI':r.payment,'Dư nợ cuối kỳ':r.closing}));const ws=XLSX.utils.json_to_sheet(data),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Lịch trả nợ');XLSX.writeFile(wb,'Tinh_Lai_PL.xlsx')}
+async function csvPL(){if(!window.PL_ROWS){const ok=await calcPL();if(!ok||!window.PL_ROWS)return}let csv='\ufeffKỳ,Ngày đến hạn,Số ngày,Dư nợ gốc,Gốc,Lãi,EMI,Dư nợ cuối kỳ\n';window.PL_ROWS.forEach(r=>csv+=`${r.i},${r.due.toLocaleDateString('vi-VN')},${r.days},${r.balance},${r.principal},${r.interest},${r.payment},${r.closing}\n`);let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='Tinh_Lai_PL.csv';a.click()}
+async function pdfPL(){if(!window.PL_ROWS){const ok=await calcPL();if(!ok||!window.PL_ROWS)return}html2pdf().set({margin:6,filename:'Tinh_Lai_PL.pdf',html2canvas:{scale:1.5},jsPDF:{orientation:'landscape',unit:'mm',format:'a4'}}).from($('plScheduleWrap')).save()}
 function resetPL(){setDefaultDates();$('plLoan').value='';$('plIns').value='7,7';$('plRate').value='52';$('plTenure').value='24';$('plScheduleWrap').style.display='none';['plPillTotal','plPillPayment'].forEach(id=>$(id).textContent='0 VND');$('plPillPeriods').textContent='0';window.PL_ROWS=null}
-function setDefaultDates(){let d=new Date();let n=new Date(d.getTime()+30*86400000);$('plDisb').value=iso(d);$('plFirst').value=iso(n)}
+function setDefaultDates(){let d=new Date(),n=new Date(d.getTime()+30*86400000);$('plDisb').value=iso(d);$('plFirst').value=iso(n)}
 function quickDate(){setDefaultDates()}
-
-
-function calcTopup(){
-const emiCurrent=num($('tuEMI').value), rate=num($('tuRate').value)/100, grace=parseInt($('tuGrace').value||0), loan=num($('tuLoan').value), insRate=num($('tuInsRate').value), yes=$('tuInsurance').value==='YES';
-if(!loan||rate<=0){alert('Vui lòng nhập Số tiền vay TOPUP và Lãi suất.');return false}
-if(grace<0){alert('Số kỳ ân hạn không hợp lệ.');return false}
-
-
-// ===== BÁM ĐÚNG FILE EXCEL TOPUP =====
-// B4  = LOAN + INS
-// B15 = B4 * TOPUP_IR / 365 * 31 + 12.000
-// D19:I19 = -PMT(TOPUP_IR/12, Kỳ hạn - GRACE_PERIOD, B4)
-// D7:I7 = EMI sau ân hạn + 12.000
-// D12:I12 = D7 * Số tháng góp + B15 * GRACE_PERIOD
-// D13:I13 = D12 - B4
-// D14:I14 = D13 / Kỳ hạn
-const insurance=yes?round0(loan*insRate/100):0;
-const totalLoan=loan+insurance;
-const graceEMI31=totalLoan*rate/365*31+12000;
-const maxEMI=emiCurrent+graceEMI31;
-const tenures=[6,12,18,24,30,36];
-const monthly=rate/12;
-const rows=[];
-
-
-tenures.forEach(t=>{
-const months=t-grace;
-if(months<=0){
-rows.push({t,status:'N/A',emiGrace:graceEMI31,pmt:null,afterGrace:months,totalGL:null,interest:null,interestMonth:null});
-return;
-}
-
-
-const pmt=monthly===0 ? totalLoan/months : (monthly*totalLoan)/(1-Math.pow(1+monthly,-months));
-const paymentAfter=pmt+12000;
-
-
-// BÁM CHÍNH XÁC LOGIC FILE EXCEL TOPUP:
-// Trạng thái OK khi PMT (chưa cộng phí 12.000) <= Max EMI.
-// Max EMI = EMI hiện tại + EMI ân hạn 31 ngày.
-const status = pmt <= maxEMI ? 'OK' : 'N/A';
-
-
-if(status !== 'OK'){
-rows.push({t,status,emiGrace:graceEMI31,pmt:null,paymentAfter:null,afterGrace:months,totalGL:null,interest:null,interestMonth:null});
-return;
-}
-
-
-const totalGL=Math.round(paymentAfter*months + graceEMI31*grace);
-const interest=Math.round(totalGL-totalLoan);
-const interestMonth=Math.round(interest/t);
-
-
-rows.push({t,status,emiGrace:graceEMI31,pmt,paymentAfter,afterGrace:months,totalGL,interest,interestMonth});
-});
-
-
-window.TOP_ROWS=rows;
-window.TOP_META={loan,insurance,totalLoan,rate,grace,graceEMI:graceEMI31,maxEMI,emiCurrent};
-
-
-const grace31=totalLoan*rate/365*31+12000;
-const grace30=totalLoan*rate/365*30+12000;
-const grace29=totalLoan*rate/365*29+12000;
-const grace28=totalLoan*rate/365*28+12000;
-
-
-let h=`<div class="top-pills">
-<span>LOAN: <b>${fmt(loan)} VND</b></span>
-<span>INS: <b>${fmt(insurance)} VND</b></span>
-<span>Tổng tiền vay: <b>${fmt(totalLoan)} VND</b></span>
-<span>Max EMI: <b>${fmt(maxEMI)} VND</b></span>
-<span>EMI ân hạn 31 ngày: <b>${fmt(grace31)} VND</b></span>
-</div>`;
-h+=`<div class="grace-title">Số tiền mỗi tháng thanh toán trong thời gian ân hạn</div>`;
-h+=`<div class="grace-pills">
-<span>31 ngày: <b>${fmt(grace31)}</b></span>
-<span>30 ngày: <b>${fmt(grace30)}</b></span>
-<span>29 ngày: <b>${fmt(grace29)}</b></span>
-<span>28 ngày: <b>${fmt(grace28)}</b></span>
-</div>`;
-
-
-h+='<table class="top-table"><thead><tr>'+
-'<th>Kỳ hạn vay</th><th>EMI trong ân hạn</th><th>EMI sau ân hạn</th><th>Số tháng góp</th><th>Trạng thái</th><th>Tổng gốc + lãi</th><th>Tổng lãi</th><th>Lãi/tháng</th>'+
-'</tr></thead><tbody>';
-
-
-rows.forEach(r=>{
-h+=`<tr>
-<td>${r.t}</td>
-<td>${fmt(grace31)}</td>
-<td>${r.paymentAfter!=null?fmt(r.paymentAfter):'N/A'}</td>
-<td>${r.afterGrace}</td>
-<td class="${r.status==='OK'?'ok':'na'}">${r.status}</td>
-<td>${r.totalGL!=null?fmt(r.totalGL)+' đ':'N/A'}</td>
-<td>${r.interest!=null?fmt(r.interest)+' đ':'N/A'}</td>
-<td>${r.interestMonth!=null?fmt(r.interestMonth)+' đ':'N/A'}</td>
-</tr>`;
-});
-h+='</tbody></table>';
-h+='<div class="note" style="margin-top:12px"><i class="fa-solid fa-circle-info"></i>'+
-'Đối chiếu đúng file Excel TOPUP: bảo hiểm YES cộng vào tổng tiền vay; EMI ân hạn tính theo 31 ngày; EMI sau ân hạn = PMT + 12.000đ phí thu hộ; tổng gốc + lãi = EMI sau ân hạn × số tháng góp + EMI ân hạn × số kỳ ân hạn.'+
-'</div>';
-
-
-$('topSummary').innerHTML=h;
-$('topResult').style.display='block';
-return true;
-}
-function resetTopup(){ $('tuEMI').value='2.536.000'; $('tuLoan').value='20.000.000'; $('tuRate').value='41'; $('tuGrace').value='8'; $('tuInsurance').value='YES'; $('tuInsRate').value='7,7'; $('topResult').style.display='none'; window.TOP_ROWS=null }
-window.addEventListener('DOMContentLoaded',()=>{
-setDefaultDates();
-const s=localStorage.getItem('plData');if(s)try{let x=JSON.parse(s);$('plDisb').value=x.disb||$('plDisb').value;$('plFirst').value=x.first||$('plFirst').value;$('plLoan').value=x.loan||'';$('plIns').value=x.ins||'7,7';$('plRate').value=x.rate||'52';$('plTenure').value=x.tenure||24}catch(e){}
-});
+async function calcTopup(){const emiCurrent=num($('tuEMI').value),rate=num($('tuRate').value),grace=parseInt($('tuGrace').value||0),loan=num($('tuLoan').value),insRate=num($('tuInsRate').value),insurance=$('tuInsurance').value;if(!loan||rate<=0){alert('Vui lòng nhập Số tiền vay TOPUP và Lãi suất.');return false}if(grace<0){alert('Số kỳ ân hạn không hợp lệ.');return false}try{const response=await apiPost('/topup',{emiCurrent,rate,grace,loan,insRate,insurance});const result=response.result,rows=result.rows||[];window.TOP_ROWS=rows;window.TOP_META={loan:result.loan,insurance:result.insurance,totalLoan:result.totalLoan,maxEMI:result.maxEMI,graceEMI:result.grace31,emiCurrent};let h=`<div class="top-pills"><span>LOAN: <b>${fmt(result.loan)} VND</b></span><span>INS: <b>${fmt(result.insurance)} VND</b></span><span>Tổng tiền vay: <b>${fmt(result.totalLoan)} VND</b></span><span>Max EMI: <b>${fmt(result.maxEMI)} VND</b></span><span>EMI ân hạn 31 ngày: <b>${fmt(result.grace31)} VND</b></span></div>`;h+=`<div class="grace-title">Số tiền mỗi tháng thanh toán trong thời gian ân hạn</div><div class="grace-pills"><span>31 ngày: <b>${fmt(result.grace31)}</b></span><span>30 ngày: <b>${fmt(result.grace30)}</b></span><span>29 ngày: <b>${fmt(result.grace29)}</b></span><span>28 ngày: <b>${fmt(result.grace28)}</b></span></div>`;h+='<table class="top-table"><thead><tr><th>Kỳ hạn vay</th><th>EMI trong ân hạn</th><th>EMI sau ân hạn</th><th>Số tháng góp</th><th>Trạng thái</th><th>Tổng gốc + lãi</th><th>Tổng lãi</th><th>Lãi/tháng</th></tr></thead><tbody>';rows.forEach(r=>{h+=`<tr><td>${r.t}</td><td>${fmt(result.grace31)}</td><td>${r.paymentAfter!=null?fmt(r.paymentAfter):'N/A'}</td><td>${r.afterGrace}</td><td class="${r.status==='OK'?'ok':'na'}">${r.status}</td><td>${r.totalGL!=null?fmt(r.totalGL)+' đ':'N/A'}</td><td>${r.interest!=null?fmt(r.interest)+' đ':'N/A'}</td><td>${r.interestMonth!=null?fmt(r.interestMonth)+' đ':'N/A'}</td></tr>`});h+='</tbody></table><div class="note" style="margin-top:12px"><i class="fa-solid fa-circle-info"></i>Kết quả được tính tại máy chủ bảo mật và trả về website để hiển thị.</div>';$('topSummary').innerHTML=h;$('topResult').style.display='block';return true}catch(e){if(e.message!=='UNAUTHORIZED')alert('Không tính được TOPUP: '+e.message);return false}}
+function resetTopup(){$('tuEMI').value='2.536.000';$('tuLoan').value='20.000.000';$('tuRate').value='41';$('tuGrace').value='8';$('tuInsurance').value='YES';$('tuInsRate').value='7,7';$('topResult').style.display='none';window.TOP_ROWS=null}
+window.addEventListener('DOMContentLoaded',()=>{setDefaultDates();const s=localStorage.getItem('plData');if(s)try{let x=JSON.parse(s);$('plDisb').value=x.disb||$('plDisb').value;$('plFirst').value=x.first||$('plFirst').value;$('plLoan').value=x.loan||'';$('plIns').value=x.ins||'7,7';$('plRate').value=x.rate||'52';$('plTenure').value=x.tenure||24}catch(e){}});
 </script>
 
 <script>
-(function(){
-  var PASSWORD="123321";
-  var lock=document.getElementById("sitePasswordLock");
-  var input=document.getElementById("sitePasswordInput");
-  var button=document.getElementById("siteUnlockButton");
-  var error=document.getElementById("sitePasswordError");
-
-  // Ghi nhớ đăng nhập trên chính trình duyệt/điện thoại này.
-  // Sau khi nhập đúng mật khẩu 1 lần, các lần mở sau sẽ tự vào.
-  if(localStorage.getItem("sitePasswordUnlocked")==="1"){
-    lock.style.display="none";
-    lock.style.pointerEvents="none";
-  }
-
-  function unlock(){
-    if(input.value===PASSWORD){
-      localStorage.setItem("sitePasswordUnlocked","1");
-      lock.style.display="none";
-      lock.style.pointerEvents="none";
-      input.value="";
-    }else{
-      error.style.display="block";
-      input.value="";
-      input.focus();
-    }
-  }
-
-  button.addEventListener("click",unlock);
-  input.focus();
-})();
+(function(){var lock=document.getElementById('sitePasswordLock'),input=document.getElementById('sitePasswordInput'),button=document.getElementById('siteUnlockButton'),error=document.getElementById('sitePasswordError');if(localStorage.getItem(TOKEN_KEY)){lock.style.display='none';lock.style.pointerEvents='none'}async function unlock(){var password=input.value;if(!password)return;button.disabled=true;button.textContent='ĐANG KIỂM TRA...';error.style.display='none';try{const res=await fetch(API_BASE+'/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password})});let data={};try{data=await res.json()}catch(e){}if(res.ok&&data.ok&&data.token){localStorage.setItem(TOKEN_KEY,data.token);lock.style.display='none';lock.style.pointerEvents='none';input.value=''}else{error.textContent='Mật khẩu không đúng!';error.style.display='block';input.value='';input.focus()}}catch(e){error.textContent='Không kết nối được máy chủ. Vui lòng thử lại!';error.style.display='block'}finally{button.disabled=false;button.textContent='MỞ KHÓA'}}button.addEventListener('click',unlock);if(!localStorage.getItem(TOKEN_KEY))input.focus()})();
 </script>
 
 </body>
