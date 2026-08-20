@@ -1,3 +1,9 @@
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -62,6 +68,23 @@ padding:7px 12px;color:#14577f;font-size:14px
 .zalo-float:hover::after{opacity:1;transform:translateY(0)}
 @media(max-width:650px){.zalo-float{right:14px;bottom:14px;width:54px;height:54px}.zalo-float::after{display:none}.donate-actions{flex-direction:column}.donate-action-btn{width:100%}}
 
+
+/* ===== IDCARD ===== */
+.idcard-card{padding:30px 31px 34px}
+.idcard-box{max-width:650px;margin:0 auto}
+.idcard-title{text-align:center;font-size:25px;font-weight:800;color:#123766;margin-bottom:8px}
+.idcard-sub{text-align:center;color:#5d708d;font-size:14px;margin-bottom:24px}
+.idcard-field{margin-bottom:18px}
+.idcard-field label{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;margin-bottom:8px}
+.idcard-field label i{color:#0768d9;width:19px;text-align:center}
+.idcard-field input{height:56px;font-size:20px;font-weight:700;text-align:right}
+.idcard-btn{width:100%;height:54px;border:0;border-radius:10px;background:#0868d9;color:#fff;font:800 16px "Be Vietnam Pro";cursor:pointer}
+.idcard-btn:hover{filter:brightness(1.04);transform:translateY(-1px)}
+.idcard-result{display:none;margin-top:22px;padding:22px;border-radius:12px;background:linear-gradient(180deg,#f3f9ff,#eef7ff);border:1px solid #dbe7f2;text-align:center}
+.idcard-result-label{font-size:14px;color:#526681}
+.idcard-result-value{font-size:32px;font-weight:800;color:#10964c;margin-top:5px}
+.idcard-detail{margin-top:12px;color:#526681;font-size:13px}
+
 </style>
 </head>
 <body>
@@ -88,6 +111,7 @@ padding:7px 12px;color:#14577f;font-size:14px
 <nav class="nav">
 <button class="active" onclick="page('pl',this)"><i class="fa-solid fa-calculator"></i>Tính lãi PL</button>
 <button onclick="page('topup',this)"><i class="fa-solid fa-chart-line"></i>Tính lãi TOPUP</button>
+<button onclick="page('idcard',this)"><i class="fa-solid fa-id-card"></i>Tính IDCARD</button>
 <button onclick="page('donate',this)"><i class="fa-regular fa-hand-heart"></i>Donate</button>
 </nav>
 </header>
@@ -143,6 +167,25 @@ padding:7px 12px;color:#14577f;font-size:14px
 </div>
 </section>
 
+
+
+<section id="idcard" class="page">
+<div class="card idcard-card">
+<div class="head"><div class="title"><i class="fa-solid fa-id-card"></i>TÍNH IDCARD</div><div class="sub">Tổng khoản vay đã bao gồm bảo hiểm khoản vay 7,7%</div></div>
+<div class="idcard-box">
+<div class="idcard-field">
+<label><i class="fa-solid fa-money-bill-wave"></i>Số tiền vay (VND)</label>
+<input id="idcardLoan" type="text" inputmode="numeric" placeholder="30,000,000" oninput="idcardMoneyInput(this)">
+</div>
+<button class="idcard-btn" type="button" onclick="calcIdcard()"><i class="fa-solid fa-calculator"></i>Số tiền nhận IDCARD</button>
+<div id="idcardResult" class="idcard-result">
+<div class="idcard-result-label">Số tiền khách được nhận</div>
+<div id="idcardReceived" class="idcard-result-value">0 VND</div>
+<div id="idcardDetail" class="idcard-detail"></div>
+</div>
+</div>
+</div>
+</section>
 
 <section id="donate" class="page">
 <div class="card donate-card">
@@ -218,6 +261,31 @@ function setDefaultDates(){let d=new Date(),n=new Date(d.getTime()+30*86400000);
 function quickDate(){setDefaultDates()}
 async function calcTopup(){const emiCurrent=num($('tuEMI').value),rate=percentNum($('tuRate').value),grace=parseInt($('tuGrace').value||0),loan=num($('tuLoan').value),insRate=percentNum($('tuInsRate').value),insurance=$('tuInsurance').value;if(!loan||rate<=0){alert('Vui lòng nhập Số tiền vay TOPUP và Lãi suất.');return false}if(grace<0){alert('Số kỳ ân hạn không hợp lệ.');return false}try{const response=await apiPost('/topup',{emiCurrent,rate,grace,loan,insRate,insurance});const result=response.result,rows=result.rows||[];window.TOP_ROWS=rows;window.TOP_META={loan:result.loan,insurance:result.insurance,totalLoan:result.totalLoan,maxEMI:result.maxEMI,graceEMI:result.grace31,emiCurrent};let h=`<div class="top-pills"><span>LOAN: <b>${fmt(result.loan)} VND</b></span><span>INS: <b>${fmt(result.insurance)} VND</b></span><span>Tổng tiền vay: <b>${fmt(result.totalLoan)} VND</b></span><span>Max EMI: <b>${fmt(result.maxEMI)} VND</b></span><span>EMI ân hạn 31 ngày: <b>${fmt(result.grace31)} VND</b></span></div>`;h+=`<div class="grace-title">Số tiền mỗi tháng thanh toán trong thời gian ân hạn</div><div class="grace-pills"><span>31 ngày: <b>${fmt(result.grace31)}</b></span><span>30 ngày: <b>${fmt(result.grace30)}</b></span><span>29 ngày: <b>${fmt(result.grace29)}</b></span><span>28 ngày: <b>${fmt(result.grace28)}</b></span></div>`;h+='<table class="top-table"><thead><tr><th>Kỳ hạn vay</th><th>EMI trong ân hạn</th><th>EMI sau ân hạn</th><th>Số tháng góp</th><th>Trạng thái</th><th>Tổng gốc + lãi</th><th>Tổng lãi</th><th>Lãi/tháng</th></tr></thead><tbody>';rows.forEach(r=>{h+=`<tr><td>${r.t}</td><td>${fmt(result.grace31)}</td><td>${r.paymentAfter!=null?fmt(r.paymentAfter):'N/A'}</td><td>${r.afterGrace}</td><td class="${r.status==='OK'?'ok':'na'}">${r.status}</td><td>${r.totalGL!=null?fmt(r.totalGL)+' đ':'N/A'}</td><td>${r.interest!=null?fmt(r.interest)+' đ':'N/A'}</td><td>${r.interestMonth!=null?fmt(r.interestMonth)+' đ':'N/A'}</td></tr>`});h+='</tbody></table><div class="note" style="margin-top:12px"><i class="fa-solid fa-circle-info"></i>Kết quả được tính tại máy chủ bảo mật và trả về website để hiển thị.</div>';$('topSummary').innerHTML=h;$('topResult').style.display='block';return true}catch(e){if(e.message!=='UNAUTHORIZED')alert('Không tính được TOPUP: '+e.message);return false}}
 function resetTopup(){$('tuEMI').value='2.536.000';$('tuLoan').value='20.000.000';$('tuRate').value='41';$('tuGrace').value='8';$('tuInsurance').value='YES';$('tuInsRate').value='7,7';$('topResult').style.display='none';window.TOP_ROWS=null}
+
+
+function idcardMoneyInput(el){
+  let v=String(el.value).replace(/\D/g,'');
+  el.value=v?Number(v).toLocaleString('en-US'):'';
+}
+
+function calcIdcard(){
+  const raw=String($('idcardLoan').value||'').replace(/,/g,'').replace(/\./g,'');
+  const loan=Number(raw)||0;
+  const insuranceRate=7.7;
+
+  if(!loan){
+    alert('Vui lòng nhập Số tiền vay.');
+    $('idcardLoan').focus();
+    return;
+  }
+
+  const received=loan/(1+insuranceRate/100);
+  const insurance=loan-received;
+
+  $('idcardReceived').textContent=fmt(received)+' VND';
+  $('idcardDetail').textContent='Khoản vay: '+fmt(loan)+' VND • Bảo hiểm 7,7%: '+fmt(insurance)+' VND';
+  $('idcardResult').style.display='block';
+}
 
 async function saveDonateQR(){
   const img=document.querySelector('.donate-qr img');
