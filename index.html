@@ -4,6 +4,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -118,8 +119,9 @@ padding:7px 12px;color:#14577f;font-size:14px
 <div class="card">
 <div class="head"><div class="title"><i class="fa-solid fa-coins"></i>CÔNG CỤ TÍNH LÃI SUẤT PL</div><div class="sub">Bản nâng cao • Chuẩn vi-VN • Excel/PDF • 30/360 • Làm tròn</div></div>
 <div class="grid">
-<div class="field"><label><i class="fa-solid fa-calendar-days"></i>Ngày Giải Ngân</label><input id="plDisb" type="date"></div>
-<div class="field"><label><i class="fa-solid fa-calendar-check"></i>Ngày Đóng Đầu Tiên</label><input id="plFirst" type="date"></div>
+<!-- Ngày được tự động thiết lập và ẩn: Giải ngân = hôm nay, Đóng đầu tiên = sau 31 ngày -->
+<div class="field" style="display:none;"><label><i class="fa-solid fa-calendar-days"></i>Ngày Giải Ngân</label><input id="plDisb" type="date"></div>
+<div class="field" style="display:none;"><label><i class="fa-solid fa-calendar-check"></i>Ngày Đóng Đầu Tiên</label><input id="plFirst" type="date"></div>
 <div class="field"><label><i class="fa-solid fa-money-bill-wave"></i>Số Tiền Vay (VND)</label><input id="plLoan" placeholder="20.000.000" oninput="moneyInput(this)"></div>
 <div class="field"><label><i class="fa-solid fa-shield-halved"></i>% Bảo Hiểm Khoản Vay (nếu có)</label><input id="plIns" value="7,7" inputmode="decimal"></div>
 <div class="field"><label><i class="fa-solid fa-percent"></i>Lãi Suất (%/năm)</label><input id="plRate" value="52" inputmode="decimal"></div>
@@ -285,7 +287,7 @@ async function excelPL(){if(!window.PL_ROWS){const ok=await calcPL();if(!ok||!wi
 async function csvPL(){if(!window.PL_ROWS){const ok=await calcPL();if(!ok||!window.PL_ROWS)return}let csv='\ufeffKỳ,Ngày đến hạn,Số ngày,Dư nợ gốc,Gốc,Lãi,EMI,Dư nợ cuối kỳ\n';window.PL_ROWS.forEach(r=>csv+=`${r.i},${r.due.toLocaleDateString('vi-VN')},${r.days},${r.balance},${r.principal},${r.interest},${r.payment},${r.closing}\n`);let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='Tinh_Lai_PL.csv';a.click()}
 async function pdfPL(){if(!window.PL_ROWS){const ok=await calcPL();if(!ok||!window.PL_ROWS)return}html2pdf().set({margin:6,filename:'Tinh_Lai_PL.pdf',html2canvas:{scale:1.5},jsPDF:{orientation:'landscape',unit:'mm',format:'a4'}}).from($('plScheduleWrap')).save()}
 function resetPL(){setDefaultDates();$('plLoan').value='';$('plIns').value='7,7';$('plRate').value='52';$('plTenure').value='24';$('plScheduleWrap').style.display='none';['plPillTotal','plPillPayment'].forEach(id=>$(id).textContent='0 VND');$('plPillPeriods').textContent='0';window.PL_ROWS=null}
-function setDefaultDates(){let d=new Date(),n=new Date(d.getTime()+30*86400000);$('plDisb').value=iso(d);$('plFirst').value=iso(n)}
+function setDefaultDates(){let d=new Date();let n=new Date(d);n.setDate(n.getDate()+31);$('plDisb').value=iso(d);$('plFirst').value=iso(n)}
 function quickDate(){setDefaultDates()}
 async function calcTopup(){const emiCurrent=num($('tuEMI').value),rate=percentNum($('tuRate').value),grace=parseInt($('tuGrace').value||0),loan=num($('tuLoan').value),insRate=percentNum($('tuInsRate').value),insurance=$('tuInsurance').value;if(!loan||rate<=0){alert('Vui lòng nhập Số tiền vay TOPUP và Lãi suất.');return false}if(grace<0){alert('Số kỳ ân hạn không hợp lệ.');return false}try{const response=await apiPost('/topup',{emiCurrent,rate,grace,loan,insRate,insurance});const result=response.result,rows=result.rows||[];window.TOP_ROWS=rows;window.TOP_META={loan:result.loan,insurance:result.insurance,totalLoan:result.totalLoan,maxEMI:result.maxEMI,graceEMI:result.grace31,emiCurrent};let h=`<div class="top-pills"><span>LOAN: <b>${fmt(result.loan)} VND</b></span><span>INS: <b>${fmt(result.insurance)} VND</b></span><span>Tổng tiền vay: <b>${fmt(result.totalLoan)} VND</b></span><span>Max EMI: <b>${fmt(result.maxEMI)} VND</b></span><span>EMI ân hạn 31 ngày: <b>${fmt(result.grace31)} VND</b></span></div>`;h+=`<div class="grace-title">Số tiền mỗi tháng thanh toán trong thời gian ân hạn</div><div class="grace-pills"><span>31 ngày: <b>${fmt(result.grace31)}</b></span><span>30 ngày: <b>${fmt(result.grace30)}</b></span><span>29 ngày: <b>${fmt(result.grace29)}</b></span><span>28 ngày: <b>${fmt(result.grace28)}</b></span></div>`;h+='<table class="top-table"><thead><tr><th>Kỳ hạn vay</th><th>EMI trong ân hạn</th><th>EMI sau ân hạn</th><th>Số tháng góp</th><th>Trạng thái</th><th>Tổng gốc + lãi</th><th>Tổng lãi</th><th>Lãi/tháng</th></tr></thead><tbody>';rows.forEach(r=>{h+=`<tr><td>${r.t}</td><td>${fmt(result.grace31)}</td><td>${r.paymentAfter!=null?fmt(r.paymentAfter):'N/A'}</td><td>${r.afterGrace}</td><td class="${r.status==='OK'?'ok':'na'}">${r.status}</td><td>${r.totalGL!=null?fmt(r.totalGL)+' đ':'N/A'}</td><td>${r.interest!=null?fmt(r.interest)+' đ':'N/A'}</td><td>${r.interestMonth!=null?fmt(r.interestMonth)+' đ':'N/A'}</td></tr>`});h+='</tbody></table><div class="note" style="margin-top:12px"><i class="fa-solid fa-circle-info"></i>Kết quả được tính tại máy chủ bảo mật và trả về website để hiển thị.</div>';$('topSummary').innerHTML=h;$('topResult').style.display='block';return true}catch(e){if(e.message!=='UNAUTHORIZED')alert('Không tính được TOPUP: '+e.message);return false}}
 function moneyInputComma(el){
