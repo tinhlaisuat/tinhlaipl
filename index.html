@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -82,28 +75,6 @@ padding:7px 12px;color:#14577f;font-size:14px
 .zalo-float:hover::after{opacity:1;transform:translateY(0)}
 @media(max-width:650px){.zalo-float{right:14px;bottom:14px;width:54px;height:54px}.zalo-float::after{display:none}.donate-actions{flex-direction:column}.donate-action-btn{width:100%}}
 
-
-
-/* ===== DONATE POPUP 24H ===== */
-.donate-popup-overlay{position:fixed;inset:0;z-index:2147483600;background:rgba(4,18,45,.72);display:none;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(4px)}
-.donate-popup-overlay.show{display:flex}
-.donate-popup-card{width:min(92vw,460px);max-height:92vh;overflow:auto;background:#fff;border-radius:18px;padding:22px;box-shadow:0 22px 70px rgba(0,0,0,.35);text-align:center;position:relative}
-.donate-popup-close{position:absolute;top:10px;right:10px;width:38px;height:38px;border:0;border-radius:50%;background:#eef4fb;color:#16375e;font-size:20px;font-weight:800;cursor:pointer}
-.donate-popup-icon{width:58px;height:58px;border-radius:50%;background:#eaf4ff;color:#0b69dc;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-size:28px}
-.donate-popup-card h2{margin:4px 30px 8px;color:#123766;font-size:22px}
-.donate-popup-card p{margin:0 auto 14px;color:#516985;font-size:13px;line-height:1.65}
-.donate-popup-qr{width:230px;height:230px;margin:0 auto 12px;padding:10px;background:#fff;border:1px solid #d8e3ee;border-radius:14px;box-shadow:0 6px 20px rgba(23,63,104,.10)}
-.donate-popup-qr img{width:100%;height:100%;object-fit:contain;border-radius:7px;display:block}
-.donate-popup-info{background:#f3f8fe;border:1px solid #d8e6f3;border-radius:12px;padding:12px 14px;text-align:left;margin-top:10px}
-.donate-popup-info div{display:flex;justify-content:space-between;gap:14px;padding:6px 0;font-size:12px}
-.donate-popup-info span{color:#6a7d94}.donate-popup-info strong{color:#123d70;text-align:right}
-.donate-popup-actions{display:flex;gap:9px;margin-top:14px}
-.donate-popup-actions button{flex:1;min-height:44px;border:0;border-radius:9px;font:700 13px "Be Vietnam Pro";cursor:pointer}
-.donate-popup-donate{background:#0868d9;color:#fff}.donate-popup-later{background:#fff;color:#173b68;border:1px solid #ccd9e6!important}
-.donate-popup-snooze{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:13px;color:#506985;font-size:12px;font-weight:600;cursor:pointer}
-.donate-popup-snooze input{width:17px;height:17px;accent-color:#0875e8}
-@media(max-width:520px){.donate-popup-card{padding:18px 14px}.donate-popup-qr{width:205px;height:205px}.donate-popup-card h2{font-size:19px}.donate-popup-actions{flex-direction:column}.donate-popup-info div{flex-direction:column;gap:2px}.donate-popup-info strong{text-align:left}}
-
 </style>
 </head>
 <body>
@@ -125,35 +96,6 @@ padding:7px 12px;color:#14577f;font-size:14px
   </div>
 </div>
 
-
-
-<!-- POPUP ỦNG HỘ: có thể ẩn trong 24 giờ -->
-<div id="donatePopup" class="donate-popup-overlay" role="dialog" aria-modal="true" aria-labelledby="donatePopupTitle">
-  <div class="donate-popup-card">
-    <button id="donatePopupClose" class="donate-popup-close" type="button" aria-label="Đóng">×</button>
-    <div class="donate-popup-icon"><i class="fa-regular fa-hand-heart"></i></div>
-    <h2 id="donatePopupTitle">ỦNG HỘ DUY TRÌ WEBSITE</h2>
-    <p>Anh chị ủng hộ một chút để Admin có thêm kinh phí duy trì máy chủ, tên miền và tiếp tục cập nhật công cụ. Xin chân thành cảm ơn! ❤️</p>
-    <div class="donate-popup-qr">
-      <img src="https://res.cloudinary.com/dhdmvqitk/image/upload/v1786589807/1786518094844.png" alt="Mã QR ngân hàng ủng hộ Admin">
-    </div>
-    <div class="donate-popup-info">
-      <div><span>Ngân hàng</span><strong>MBBANK</strong></div>
-      <div><span>Chủ tài khoản</span><strong>VO QUOC THIEN</strong></div>
-      <div><span>Số tài khoản</span><strong>0964307247</strong></div>
-      <div><span>Nội dung</span><strong>UNGHO ADMIN TLS</strong></div>
-    </div>
-    <label class="donate-popup-snooze">
-      <input id="donatePopup24h" type="checkbox">
-      Không hiển thị tiếp trong 24 giờ tới
-    </label>
-    <div class="donate-popup-actions">
-      <button id="donatePopupGoDonate" class="donate-popup-donate" type="button">ỦNG HỘ NGAY</button>
-      <button id="donatePopupLater" class="donate-popup-later" type="button">ĐỂ SAU</button>
-    </div>
-  </div>
-</div>
-
 <header class="header">
 <div class="brand"><h1>TÍNH LÃI SUẤT</h1><p>Công cụ tính lãi vay nhanh chóng - chính xác - minh bạch</p></div>
 <nav class="nav">
@@ -170,8 +112,9 @@ padding:7px 12px;color:#14577f;font-size:14px
 <div class="card">
 <div class="head"><div class="title"><i class="fa-solid fa-coins"></i>CÔNG CỤ TÍNH LÃI SUẤT PL</div><div class="sub">Bản nâng cao • Chuẩn vi-VN • Excel/PDF • 30/360 • Làm tròn</div></div>
 <div class="grid">
-<div class="field"><label><i class="fa-solid fa-calendar-days"></i>Ngày Giải Ngân</label><input id="plDisb" type="date"></div>
-<div class="field"><label><i class="fa-solid fa-calendar-check"></i>Ngày Đóng Đầu Tiên</label><input id="plFirst" type="date"></div>
+<!-- Ngày được tự động thiết lập và ẩn: Giải ngân = hôm nay, Đóng đầu tiên = sau 31 ngày -->
+<div class="field" style="display:none;"><label><i class="fa-solid fa-calendar-days"></i>Ngày Giải Ngân</label><input id="plDisb" type="date"></div>
+<div class="field" style="display:none;"><label><i class="fa-solid fa-calendar-check"></i>Ngày Đóng Đầu Tiên</label><input id="plFirst" type="date"></div>
 <div class="field"><label><i class="fa-solid fa-money-bill-wave"></i>Số Tiền Vay (VND)</label><input id="plLoan" placeholder="20.000.000" oninput="moneyInput(this)"></div>
 <div class="field"><label><i class="fa-solid fa-shield-halved"></i>% Bảo Hiểm Khoản Vay (nếu có)</label><input id="plIns" value="7,7" inputmode="decimal"></div>
 <div class="field"><label><i class="fa-solid fa-percent"></i>Lãi Suất (%/năm)</label><input id="plRate" value="52" inputmode="decimal"></div>
@@ -337,7 +280,15 @@ async function excelPL(){if(!window.PL_ROWS){const ok=await calcPL();if(!ok||!wi
 async function csvPL(){if(!window.PL_ROWS){const ok=await calcPL();if(!ok||!window.PL_ROWS)return}let csv='\ufeffKỳ,Ngày đến hạn,Số ngày,Dư nợ gốc,Gốc,Lãi,EMI,Dư nợ cuối kỳ\n';window.PL_ROWS.forEach(r=>csv+=`${r.i},${r.due.toLocaleDateString('vi-VN')},${r.days},${r.balance},${r.principal},${r.interest},${r.payment},${r.closing}\n`);let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='Tinh_Lai_PL.csv';a.click()}
 async function pdfPL(){if(!window.PL_ROWS){const ok=await calcPL();if(!ok||!window.PL_ROWS)return}html2pdf().set({margin:6,filename:'Tinh_Lai_PL.pdf',html2canvas:{scale:1.5},jsPDF:{orientation:'landscape',unit:'mm',format:'a4'}}).from($('plScheduleWrap')).save()}
 function resetPL(){setDefaultDates();$('plLoan').value='';$('plIns').value='7,7';$('plRate').value='52';$('plTenure').value='24';$('plScheduleWrap').style.display='none';['plPillTotal','plPillPayment'].forEach(id=>$(id).textContent='0 VND');$('plPillPeriods').textContent='0';window.PL_ROWS=null}
-function setDefaultDates(){let d=new Date(),n=new Date(d.getTime()+30*86400000);$('plDisb').value=iso(d);$('plFirst').value=iso(n)}
+function setDefaultDates(){
+  let d=new Date();
+  let n=new Date(d);
+  // Quy ước PL: ngày giải ngân là ngày 1 thì ngày đóng đầu tiên là ngày 31.
+  // Tức ngày đóng = ngày giải ngân + 30 ngày.
+  n.setDate(n.getDate()+30);
+  $('plDisb').value=iso(d);
+  $('plFirst').value=iso(n);
+}
 function quickDate(){setDefaultDates()}
 async function calcTopup(){const emiCurrent=num($('tuEMI').value),rate=percentNum($('tuRate').value),grace=parseInt($('tuGrace').value||0),loan=num($('tuLoan').value),insRate=percentNum($('tuInsRate').value),insurance=$('tuInsurance').value;if(!loan||rate<=0){alert('Vui lòng nhập Số tiền vay TOPUP và Lãi suất.');return false}if(grace<0){alert('Số kỳ ân hạn không hợp lệ.');return false}try{const response=await apiPost('/topup',{emiCurrent,rate,grace,loan,insRate,insurance});const result=response.result,rows=result.rows||[];window.TOP_ROWS=rows;window.TOP_META={loan:result.loan,insurance:result.insurance,totalLoan:result.totalLoan,maxEMI:result.maxEMI,graceEMI:result.grace31,emiCurrent};let h=`<div class="top-pills"><span>LOAN: <b>${fmt(result.loan)} VND</b></span><span>INS: <b>${fmt(result.insurance)} VND</b></span><span>Tổng tiền vay: <b>${fmt(result.totalLoan)} VND</b></span><span>Max EMI: <b>${fmt(result.maxEMI)} VND</b></span><span>EMI ân hạn 31 ngày: <b>${fmt(result.grace31)} VND</b></span></div>`;h+=`<div class="grace-title">Số tiền mỗi tháng thanh toán trong thời gian ân hạn</div><div class="grace-pills"><span>31 ngày: <b>${fmt(result.grace31)}</b></span><span>30 ngày: <b>${fmt(result.grace30)}</b></span><span>29 ngày: <b>${fmt(result.grace29)}</b></span><span>28 ngày: <b>${fmt(result.grace28)}</b></span></div>`;h+='<table class="top-table"><thead><tr><th>Kỳ hạn vay</th><th>EMI trong ân hạn</th><th>EMI sau ân hạn</th><th>Số tháng góp</th><th>Trạng thái</th><th>Tổng gốc + lãi</th><th>Tổng lãi</th><th>Lãi/tháng</th></tr></thead><tbody>';rows.forEach(r=>{h+=`<tr><td>${r.t}</td><td>${fmt(result.grace31)}</td><td>${r.paymentAfter!=null?fmt(r.paymentAfter):'N/A'}</td><td>${r.afterGrace}</td><td class="${r.status==='OK'?'ok':'na'}">${r.status}</td><td>${r.totalGL!=null?fmt(r.totalGL)+' đ':'N/A'}</td><td>${r.interest!=null?fmt(r.interest)+' đ':'N/A'}</td><td>${r.interestMonth!=null?fmt(r.interestMonth)+' đ':'N/A'}</td></tr>`});h+='</tbody></table><div class="note" style="margin-top:12px"><i class="fa-solid fa-circle-info"></i>Kết quả được tính tại máy chủ bảo mật và trả về website để hiển thị.</div>';$('topSummary').innerHTML=h;$('topResult').style.display='block';return true}catch(e){if(e.message!=='UNAUTHORIZED')alert('Không tính được TOPUP: '+e.message);return false}}
 function moneyInputComma(el){
@@ -447,63 +398,6 @@ window.addEventListener('DOMContentLoaded',()=>{setDefaultDates();const s=localS
 
 <script>
 (function(){var lock=document.getElementById('sitePasswordLock'),input=document.getElementById('sitePasswordInput'),button=document.getElementById('siteUnlockButton'),error=document.getElementById('sitePasswordError');if(localStorage.getItem(TOKEN_KEY)){lock.style.display='none';lock.style.pointerEvents='none'}async function unlock(){var password=input.value;if(!password)return;button.disabled=true;button.textContent='ĐANG KIỂM TRA...';error.style.display='none';try{const res=await fetch(API_BASE+'/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password})});let data={};try{data=await res.json()}catch(e){}if(res.ok&&data.ok&&data.token){localStorage.setItem(TOKEN_KEY,data.token);lock.style.display='none';lock.style.pointerEvents='none';input.value=''}else{error.textContent='Mật khẩu không đúng!';error.style.display='block';input.value='';input.focus()}}catch(e){error.textContent='Không kết nối được máy chủ. Vui lòng thử lại!';error.style.display='block'}finally{button.disabled=false;button.textContent='MỞ KHÓA'}}button.addEventListener('click',unlock);if(!localStorage.getItem(TOKEN_KEY))input.focus()})();
-</script>
-
-
-
-<script>
-(function(){
-  const POPUP_HIDE_KEY='tlsDonatePopupHideUntil';
-  const popup=document.getElementById('donatePopup');
-  const checkbox=document.getElementById('donatePopup24h');
-  const closeBtn=document.getElementById('donatePopupClose');
-  const laterBtn=document.getElementById('donatePopupLater');
-  const donateBtn=document.getElementById('donatePopupGoDonate');
-
-  function shouldShowDonatePopup(){
-    const until=Number(localStorage.getItem(POPUP_HIDE_KEY)||0);
-    return Date.now()>=until;
-  }
-  function showDonatePopup(){
-    if(!popup || !shouldShowDonatePopup()) return;
-    popup.classList.add('show');
-    document.body.style.overflow='hidden';
-    setTimeout(()=>closeBtn && closeBtn.focus(),50);
-  }
-  function closeDonatePopup(){
-    if(!popup) return;
-    if(checkbox && checkbox.checked){
-      localStorage.setItem(POPUP_HIDE_KEY,String(Date.now()+24*60*60*1000));
-    }
-    popup.classList.remove('show');
-    document.body.style.overflow='';
-  }
-  function waitUntilUnlocked(){
-    const lock=document.getElementById('sitePasswordLock');
-    if(!lock || lock.style.display==='none'){
-      setTimeout(showDonatePopup,250);
-      return;
-    }
-    const observer=new MutationObserver(()=>{
-      if(lock.style.display==='none'){
-        observer.disconnect();
-        setTimeout(showDonatePopup,250);
-      }
-    });
-    observer.observe(lock,{attributes:true,attributeFilter:['style']});
-  }
-
-  closeBtn && closeBtn.addEventListener('click',closeDonatePopup);
-  laterBtn && laterBtn.addEventListener('click',closeDonatePopup);
-  donateBtn && donateBtn.addEventListener('click',()=>{
-    closeDonatePopup();
-    const donateNav=[...document.querySelectorAll('.nav button')].find(b=>b.textContent.includes('Donate'));
-    if(donateNav){page('donate',donateNav);}
-  });
-  popup && popup.addEventListener('click',e=>{if(e.target===popup)closeDonatePopup();});
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&popup&&popup.classList.contains('show'))closeDonatePopup();});
-  waitUntilUnlocked();
-})();
 </script>
 
 </body>
