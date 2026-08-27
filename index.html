@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="cic-build" content="2026-08-27-CIC-FINAL-PENDING-COMPLETED">
+<meta name="cic-build" content="2026-08-27-CIC-SHARED-HISTORY-NO-POPUP">
 <title>TÍNH LÃI SUẤT - PL & TOPUP</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -76,31 +76,6 @@ padding:7px 12px;color:#14577f;font-size:14px
 .zalo-float::after{content:"Chat Zalo";position:absolute;right:68px;white-space:nowrap;background:#102d60;color:#fff;padding:7px 10px;border-radius:7px;font:700 12px "Be Vietnam Pro";opacity:0;pointer-events:none;transform:translateY(4px);transition:.2s}
 .zalo-float:hover::after{opacity:1;transform:translateY(0)}
 @media(max-width:650px){.zalo-float{right:14px;bottom:14px;width:54px;height:54px}.zalo-float::after{display:none}.donate-actions{flex-direction:column}.donate-action-btn{width:100%}}
-
-
-
-/* ===== DONATE POPUP 24H ===== */
-.donate-popup-overlay{position:fixed;inset:0;z-index:2147483600;background:rgba(4,18,45,.72);display:none;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(4px)}
-.donate-popup-overlay.show{display:flex}
-.donate-popup-card{width:min(92vw,460px);max-height:92vh;overflow:auto;background:#fff;border-radius:18px;padding:22px;box-shadow:0 22px 70px rgba(0,0,0,.35);text-align:center;position:relative}
-.donate-popup-close{position:absolute;top:10px;right:10px;width:38px;height:38px;border:0;border-radius:50%;background:#eef4fb;color:#16375e;font-size:20px;font-weight:800;cursor:pointer}
-.donate-popup-icon{width:58px;height:58px;border-radius:50%;background:#eaf4ff;color:#0b69dc;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-size:28px}
-.donate-popup-card h2{margin:4px 30px 8px;color:#123766;font-size:22px}
-.donate-popup-card p{margin:0 auto 14px;color:#516985;font-size:13px;line-height:1.65}
-.donate-popup-qr{width:230px;height:230px;margin:0 auto 12px;padding:10px;background:#fff;border:1px solid #d8e3ee;border-radius:14px;box-shadow:0 6px 20px rgba(23,63,104,.10)}
-.donate-popup-qr img{width:100%;height:100%;object-fit:contain;border-radius:7px;display:block}
-.donate-popup-info{background:#f3f8fe;border:1px solid #d8e6f3;border-radius:12px;padding:12px 14px;text-align:left;margin-top:10px}
-.donate-popup-info div{display:flex;justify-content:space-between;gap:14px;padding:6px 0;font-size:12px}
-.donate-popup-info span{color:#6a7d94}.donate-popup-info strong{color:#123d70;text-align:right}
-.donate-popup-actions{display:flex;gap:9px;margin-top:14px}
-.donate-popup-actions button{flex:1;min-height:44px;border:0;border-radius:9px;font:700 13px "Be Vietnam Pro";cursor:pointer}
-.donate-popup-donate{background:#0868d9;color:#fff}.donate-popup-later{background:#fff;color:#173b68;border:1px solid #ccd9e6!important}
-.donate-popup-snooze{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:13px;color:#506985;font-size:12px;font-weight:600;cursor:pointer}
-.donate-popup-snooze input{width:17px;height:17px;accent-color:#0875e8}
-@media(max-width:520px){.donate-popup-card{padding:18px 14px}.donate-popup-qr{width:205px;height:205px}.donate-popup-card h2{font-size:19px}.donate-popup-actions{flex-direction:column}.donate-popup-info div{flex-direction:column;gap:2px}.donate-popup-info strong{text-align:left}}
-
-
-
 /* ===== CIC + ADMIN ===== */
 function sanitizeCICCCCD(el){
   let s = String(el.value || '');
@@ -163,25 +138,6 @@ function sanitizeCICCCCD(el){
     <div id="sitePasswordError" style="display:none;margin-top:10px;color:#e33;font-size:13px;font-weight:700;">Mật khẩu không đúng!</div>
   </div>
 </div>
-
-
-
-<!-- POPUP ỦNG HỘ: có thể ẩn trong 24 giờ -->
-<div id="donatePopup" class="donate-popup-overlay" role="dialog" aria-modal="true" aria-labelledby="donatePopupTitle">
-  <div class="donate-popup-card">
-    <button id="donatePopupClose" class="donate-popup-close" type="button" aria-label="Đóng">×</button>
-    <div class="donate-popup-icon"><i class="fa-regular fa-hand-heart"></i></div>
-    <h2 id="donatePopupTitle">ỦNG HỘ DUY TRÌ WEBSITE</h2>
-    <p>Anh chị ủng hộ một chút để Admin có thêm kinh phí duy trì máy chủ, tên miền và tiếp tục cập nhật công cụ. Xin chân thành cảm ơn! ❤️</p>
-    <div class="donate-popup-qr">
-      <img src="https://res.cloudinary.com/dhdmvqitk/image/upload/v1786589807/1786518094844.png" alt="Mã QR ngân hàng ủng hộ Admin">
-    </div>
-    <div class="donate-popup-info">
-      <div><span>Ngân hàng</span><strong>MBBANK</strong></div>
-      <div><span>Chủ tài khoản</span><strong>VO QUOC THIEN</strong></div>
-      <div><span>Số tài khoản</span><strong>0964307247</strong></div>
-      <div><span>Nội dung</span><strong>UNGHO ADMIN TLS</strong></div>
-    </div>
     <label class="donate-popup-snooze">
       <input id="donatePopup24h" type="checkbox">
       Không hiển thị tiếp trong 24 giờ tới
@@ -334,10 +290,10 @@ Từ <strong id="idcardMonthlyMin">0 VND</strong> đến <strong id="idcardMonth
 
     <div class="cic-history">
       <div class="cic-history-head">
-        <strong><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử tra CIC <span style="font-size:11px;font-weight:600;color:#6b7f96">(bấm khách hàng để xem lại)</span></strong>
+        <strong><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử tra CIC dùng chung <span style="font-size:11px;font-weight:600;color:#6b7f96">(bấm khách hàng để xem lại)</span></strong>
       </div>
       <div class="cic-history-search">
-        <input id="cicHistorySearch" type="search" placeholder="Tìm theo tên khách hàng hoặc CCCD..." oninput="renderCICHistory()">
+        <input id="cicHistorySearch" type="search" placeholder="Tìm khách hàng trong lịch sử dùng chung..." oninput="renderCICHistory()">
         <span id="cicHistoryCount" class="cic-history-count"></span>
       </div>
       <div id="cicHistoryList" class="cic-history-list">
@@ -569,7 +525,6 @@ function copyDonateContent(){
 const CIC_API_BASE = 'https://cic-api.thien-miraeasset.workers.dev';
 const CIC_ADMIN_TOKEN_KEY = 'tlsCicAdminToken';
 const CIC_REQUEST_KEY = 'tlsCicLastRequest';
-const CIC_HISTORY_KEY = 'tlsCicHistory';
 let cicPollTimer = null;
 
 async function cicFetch(path, options={}){
@@ -601,33 +556,32 @@ function cicMaskCccd(v){
 }
 
 
-function getCICHistory(){
-  try{
-    const arr = JSON.parse(localStorage.getItem(CIC_HISTORY_KEY) || '[]');
-    return Array.isArray(arr) ? arr : [];
-  }catch(e){
-    return [];
+
+let CIC_SHARED_HISTORY = [];
+
+async function loadCICHistory(){
+  const box = $('cicHistoryList');
+  if(box){
+    box.innerHTML = '<div class="cic-history-empty"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải lịch sử dùng chung...</div>';
   }
-}
 
-function saveCICHistory(arr){
-  localStorage.setItem(CIC_HISTORY_KEY, JSON.stringify(arr.slice(0,500)));
-}
-
-function upsertCICHistory(item){
-  const arr = getCICHistory();
-  const index = arr.findIndex(x => x.id === item.id);
-  if(index >= 0) arr[index] = {...arr[index], ...item};
-  else arr.unshift(item);
-  saveCICHistory(arr);
-  renderCICHistory();
+  try{
+    const data = await cicFetch('/cic/history', {method:'GET'});
+    CIC_SHARED_HISTORY = Array.isArray(data.requests) ? data.requests : [];
+    renderCICHistory();
+  }catch(e){
+    CIC_SHARED_HISTORY = [];
+    if(box){
+      box.innerHTML = '<div class="cic-history-empty">Không tải được lịch sử: ' + escapeHtml(e.message) + '</div>';
+    }
+  }
 }
 
 function renderCICHistory(){
   const box = $('cicHistoryList');
   if(!box) return;
 
-  const arr = getCICHistory();
+  const arr = CIC_SHARED_HISTORY;
   const searchEl = $('cicHistorySearch');
   const q = String(searchEl ? searchEl.value : '').trim().toLowerCase();
 
@@ -636,8 +590,11 @@ function renderCICHistory(){
     const qDigits = q.replace(/\D/g,'');
     filtered = arr.filter(x => {
       const name = String(x.fullName || '').toLowerCase();
-      const cccd = String(x.cccd || '');
-      return name.includes(q) || (qDigits && cccd.includes(qDigits));
+      const masked = String(x.cccdMasked || '');
+      const maskedDigits = masked.replace(/\D/g,'');
+      return name.includes(q) ||
+        (qDigits && maskedDigits.includes(qDigits)) ||
+        masked.toLowerCase().includes(q);
     });
   }
 
@@ -645,7 +602,7 @@ function renderCICHistory(){
   if(countEl){
     countEl.textContent = q
       ? `Tìm thấy ${filtered.length}/${arr.length} lượt`
-      : `${arr.length}/500 lượt đã lưu`;
+      : `${arr.length}/500 lượt dùng chung`;
   }
 
   if(!arr.length){
@@ -661,11 +618,12 @@ function renderCICHistory(){
   box.innerHTML = filtered.map(x => {
     const done = x.status === 'completed';
     const created = x.createdAt ? new Date(x.createdAt).toLocaleString('vi-VN') : '';
+
     return `<div class="cic-history-item" data-cic-id="${escapeHtml(x.id)}" onclick="openCICHistory('${escapeHtml(x.id)}')">
       <div class="cic-history-top">
         <div>
           <div class="cic-history-name">${escapeHtml(x.fullName || '-')}</div>
-          <div class="cic-history-meta">CCCD: ${escapeHtml(cicMaskCccd(x.cccd || ''))}${created ? ' • ' + escapeHtml(created) : ''}</div>
+          <div class="cic-history-meta">CCCD: ${escapeHtml(x.cccdMasked || '-')}${created ? ' • ' + escapeHtml(created) : ''}</div>
         </div>
         <span class="cic-history-status ${done ? 'done' : ''}">${done ? 'Đã có kết quả' : 'Đang xử lý'}</span>
       </div>
@@ -673,60 +631,34 @@ function renderCICHistory(){
   }).join('');
 }
 
-function clearCICHistory(){
-  if(!confirm('Xóa toàn bộ lịch sử tra CIC trên thiết bị này?')) return;
-  localStorage.removeItem(CIC_HISTORY_KEY);
-  localStorage.removeItem(CIC_REQUEST_KEY);
-  renderCICHistory();
-}
-
 async function openCICHistory(id){
-  const item = getCICHistory().find(x => x.id === id);
+  const item = CIC_SHARED_HISTORY.find(x => x.id === id);
   if(!item) return;
 
-  // Đánh dấu dòng đang xem
   document.querySelectorAll('.cic-history-item').forEach(el => el.classList.remove('selected'));
   const selected = document.querySelector(`.cic-history-item[data-cic-id="${CSS.escape(id)}"]`);
   if(selected) selected.classList.add('selected');
 
-  // Chỉ mở lại kết quả; không điền lại vào ô Tra CIC để tránh nhầm khi nhập khách mới.
-  // Lấy dữ liệu mới nhất từ máy chủ để đảm bảo lịch sử luôn hiện đủ thông tin.
-  try{
-    const data = await cicFetch('/cic/status?id=' + encodeURIComponent(id), {
-      method: 'GET'
-    });
+  $('cicResultDetails').style.display = 'grid';
+  $('cicResultName').textContent = item.fullName || '-';
+  $('cicResultCccd').textContent = item.cccdMasked || '-';
 
-    const r = data.request || item;
-
-    const fullItem = {
-      id: r.id || item.id,
-      fullName: r.fullName || item.fullName,
-      cccd: r.cccd || item.cccd,
-      status: r.status || item.status,
-      debt: r.debt ?? item.debt ?? '',
-      institutions: r.institutions ?? item.institutions ?? '',
-      cicStatus: r.cicStatus || item.cicStatus || '',
-      createdAt: r.createdAt || item.createdAt || '',
-      completedAt: r.completedAt || item.completedAt || ''
-    };
-
-    localStorage.setItem(CIC_REQUEST_KEY, JSON.stringify(fullItem));
-    upsertCICHistory(fullItem);
-
-    if(fullItem.status === 'completed'){
-      renderCICResult(fullItem);
-    }else{
-      showCICProcessing(fullItem.fullName, fullItem.cccd);
-      pollCICStatus(fullItem, true);
-    }
-  }catch(e){
-    // Nếu mạng lỗi vẫn mở dữ liệu đã lưu trên máy
-    localStorage.setItem(CIC_REQUEST_KEY, JSON.stringify(item));
-    if(item.status === 'completed') renderCICResult(item);
-    else showCICProcessing(item.fullName, item.cccd);
+  if(item.status !== 'completed'){
+    const box = $('cicResultStatus');
+    box.className = 'cic-status processing';
+    box.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý. Chưa có kết quả từ Admin.';
+    $('cicResultDebt').textContent = 'Đang chờ';
+    $('cicResultInstitutions').textContent = 'Đang chờ';
+    $('cicResultRisk').textContent = 'Đang chờ Admin trả kết quả';
+  }else{
+    const box = $('cicResultStatus');
+    box.className = 'cic-status done';
+    box.innerHTML = '<i class="fa-solid fa-circle-check"></i> Admin đã trả kết quả CIC.';
+    $('cicResultDebt').textContent = cicFormatDebt(item.debt);
+    $('cicResultInstitutions').textContent = String(item.institutions ?? '-');
+    $('cicResultRisk').textContent = item.cicStatus || '-';
   }
 
-  // Cuộn lên khung kết quả để thấy ngay thông tin vừa chọn.
   const resultBox = document.querySelector('#cic .cic-result');
   if(resultBox){
     resultBox.scrollIntoView({behavior:'smooth', block:'center'});
@@ -734,7 +666,7 @@ async function openCICHistory(id){
 }
 
 function initCICEmployee(){
-  renderCICHistory();
+  loadCICHistory();
 
   const saved = localStorage.getItem(CIC_REQUEST_KEY);
   if(!saved) return;
@@ -808,7 +740,6 @@ async function submitCICRequest(){
       createdAt: new Date().toISOString()
     };
     localStorage.setItem(CIC_REQUEST_KEY, JSON.stringify(saved));
-    upsertCICHistory(saved);
 
     showCICProcessing(fullName, cccd);
 
@@ -816,6 +747,7 @@ async function submitCICRequest(){
     $('cicFullName').value = '';
     $('cicCccd').value = '';
 
+    loadCICHistory();
     pollCICStatus(saved);
   }catch(e){
     alert('Không gửi được yêu cầu CIC: ' + e.message);
@@ -837,17 +769,6 @@ function pollCICStatus(saved, oneShot=false){
       const r = data.request;
 
       if(r){
-        upsertCICHistory({
-          id: r.id,
-          fullName: r.fullName,
-          cccd: r.cccd,
-          status: r.status,
-          debt: r.debt,
-          institutions: r.institutions,
-          cicStatus: r.cicStatus,
-          createdAt: r.createdAt,
-          completedAt: r.completedAt
-        });
 
         // Nếu đang xem đúng hồ sơ này thì cập nhật khung Kết quả.
         const current = localStorage.getItem(CIC_REQUEST_KEY);
@@ -870,6 +791,7 @@ function pollCICStatus(saved, oneShot=false){
 
         if(r.status === 'completed'){
           clearInterval(cicPollTimer);
+          loadCICHistory();
         }
       }
     }catch(e){}
@@ -1148,58 +1070,7 @@ window.addEventListener('DOMContentLoaded',()=>{setDefaultDates();const s=localS
 
 
 <script>
-(function(){
-  const POPUP_HIDE_KEY='tlsDonatePopupHideUntil';
-  const popup=document.getElementById('donatePopup');
-  const checkbox=document.getElementById('donatePopup24h');
-  const closeBtn=document.getElementById('donatePopupClose');
-  const laterBtn=document.getElementById('donatePopupLater');
-  const donateBtn=document.getElementById('donatePopupGoDonate');
 
-  function shouldShowDonatePopup(){
-    const until=Number(localStorage.getItem(POPUP_HIDE_KEY)||0);
-    return Date.now()>=until;
-  }
-  function showDonatePopup(){
-    if(!popup || !shouldShowDonatePopup()) return;
-    popup.classList.add('show');
-    document.body.style.overflow='hidden';
-    setTimeout(()=>closeBtn && closeBtn.focus(),50);
-  }
-  function closeDonatePopup(){
-    if(!popup) return;
-    if(checkbox && checkbox.checked){
-      localStorage.setItem(POPUP_HIDE_KEY,String(Date.now()+24*60*60*1000));
-    }
-    popup.classList.remove('show');
-    document.body.style.overflow='';
-  }
-  function waitUntilUnlocked(){
-    const lock=document.getElementById('sitePasswordLock');
-    if(!lock || lock.style.display==='none'){
-      setTimeout(showDonatePopup,250);
-      return;
-    }
-    const observer=new MutationObserver(()=>{
-      if(lock.style.display==='none'){
-        observer.disconnect();
-        setTimeout(showDonatePopup,250);
-      }
-    });
-    observer.observe(lock,{attributes:true,attributeFilter:['style']});
-  }
-
-  closeBtn && closeBtn.addEventListener('click',closeDonatePopup);
-  laterBtn && laterBtn.addEventListener('click',closeDonatePopup);
-  donateBtn && donateBtn.addEventListener('click',()=>{
-    closeDonatePopup();
-    const donateNav=[...document.querySelectorAll('.nav button')].find(b=>b.textContent.includes('Donate'));
-    if(donateNav){page('donate',donateNav);}
-  });
-  popup && popup.addEventListener('click',e=>{if(e.target===popup)closeDonatePopup();});
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&popup&&popup.classList.contains('show'))closeDonatePopup();});
-  waitUntilUnlocked();
-})();
 </script>
 
 <script>window.addEventListener('DOMContentLoaded',()=>{initCICEmployee();});</script>
