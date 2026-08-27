@@ -278,7 +278,7 @@ Từ <strong id="idcardMonthlyMin">0 VND</strong> đến <strong id="idcardMonth
     </div>
     <div class="cic-form">
       <div class="field"><label><i class="fa-solid fa-user"></i>Họ Tên</label><input id="cicFullName" autocomplete="name" placeholder="Nhập họ tên khách hàng"></div>
-      <div class="field"><label><i class="fa-solid fa-id-card"></i>Số CCCD</label><input id="cicCccd" inputmode="numeric" maxlength="12" placeholder="Nhập số CCCD" oninput="this.value=this.value.replace(/\\D/g,'').slice(0,12)"></div>
+      <div class="field"><label><i class="fa-solid fa-id-card"></i>Số CCCD</label><input id="cicCccd" inputmode="numeric" maxlength="12" placeholder="Nhập số CCCD" oninput="this.value=this.value.replace(/\D/g,'').slice(0,12)"></div>
     </div>
     <div class="cic-actions"><button id="cicSubmitBtn" class="btn blue" type="button" onclick="submitCICRequest()"><i class="fa-solid fa-paper-plane"></i>Tra CIC</button></div>
     <div class="cic-result">
@@ -499,66 +499,339 @@ const CIC_REQUEST_KEY = 'tlsCicLastRequest';
 let cicPollTimer = null;
 
 async function cicFetch(path, options={}){
-  const res=await fetch(CIC_API_BASE+path,{...options,headers:{'Content-Type':'application/json',...(options.headers||{})}});
-  let data={}; try{data=await res.json()}catch(e){}
-  if(!res.ok) throw new Error(data.error||'Không thể kết nối máy chủ CIC.');
+  const res = await fetch(CIC_API_BASE + path, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(options.headers || {})
+    }
+  });
+  let data = {};
+  try { data = await res.json(); } catch(e) {}
+  if(!res.ok) throw new Error(data.error || 'Không thể kết nối máy chủ CIC.');
   return data;
 }
-function cicFormatDebt(v){const n=Number(v||0);return n.toLocaleString('vi-VN')+' VND'}
-function cicMaskCccd(v){v=String(v||'');return v.length>8?v.slice(0,4)+'••••'+v.slice(-4):v}
+
+function cicFormatDebt(v){
+  const raw = String(v ?? '').trim();
+  if(!raw) return '0 VND';
+  const digits = raw.replace(/\D/g,'');
+  if(!digits) return raw;
+  return Number(digits).toLocaleString('vi-VN') + ' VND';
+}
+
+function cicMaskCccd(v){
+  v = String(v || '');
+  return v.length > 8 ? v.slice(0,4) + '••••' + v.slice(-4) : v;
+}
+
 function initCICEmployee(){
-  const saved=localStorage.getItem(CIC_REQUEST_KEY); if(!saved)return;
-  try{const x=JSON.parse(saved); if(x&&x.id&&x.token){showCICProcessing(x.fullName,x.cccd); pollCICStatus(x);}}catch(e){}
-}
-function showCICProcessing(fullName,cccd){
-  const box=$('cicResultStatus'); box.className='cic-status processing'; box.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý. Yêu cầu đã được gửi đến Admin.';
-  $('cicResultDetails').style.display='grid'; $('cicResultName').textContent=fullName||'-'; $('cicResultCccd').textContent=cccd||'-'; $('cicResultDebt').textContent='Đang chờ'; $('cicResultInstitutions').textContent='Đang chờ'; $('cicResultRisk').textContent='Đang chờ Admin trả kết quả';
-}
-async function submitCICRequest(){
-  const fullName=$('cicFullName').value.trim(), cccd=$('cicCccd').value.trim();
-  if(fullName.length<2){alert('Vui lòng nhập họ tên.');$('cicFullName').focus();return}
-  if(!/^\\d{9,12}$/.test(cccd)){alert('Vui lòng nhập số CCCD hợp lệ.');$('cicCccd').focus();return}
-  const btn=$('cicSubmitBtn');btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i>Đang gửi...';
+  const saved = localStorage.getItem(CIC_REQUEST_KEY);
+  if(!saved) return;
   try{
-    const data=await cicFetch('/cic/request',{method:'POST',body:JSON.stringify({fullName,cccd})});
-    const saved={id:data.id,token:data.token,fullName,cccd};localStorage.setItem(CIC_REQUEST_KEY,JSON.stringify(saved));showCICProcessing(fullName,cccd);pollCICStatus(saved);
-  }catch(e){alert('Không gửi được yêu cầu CIC: '+e.message)}finally{btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-paper-plane"></i>Tra CIC'}
+    const x = JSON.parse(saved);
+    if(x && x.id){
+      showCICProcessing(x.fullName, x.cccd);
+      pollCICStatus(x);
+    }
+  }catch(e){}
 }
+
+function showCICProcessing(fullName, cccd){
+  const box = $('cicResultStatus');
+  box.className = 'cic-status processing';
+  box.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý. Yêu cầu đã được gửi đến Admin.';
+  $('cicResultDetails').style.display = 'grid';
+  $('cicResultName').textContent = fullName || '-';
+  $('cicResultCccd').textContent = cccd || '-';
+  $('cicResultDebt').textContent = 'Đang chờ';
+  $('cicResultInstitutions').textContent = 'Đang chờ';
+  $('cicResultRisk').textContent = 'Đang chờ Admin trả kết quả';
+}
+
+async function submitCICRequest(){
+  const fullName = $('cicFullName').value.trim();
+  const cccd = $('cicCccd').value.replace(/\D/g,'').trim();
+
+  if(fullName.length < 2){
+    alert('Vui lòng nhập họ tên.');
+    $('cicFullName').focus();
+    return;
+  }
+
+  if(!/^\d{9,12}$/.test(cccd)){
+    alert('Vui lòng nhập số CCCD hợp lệ (9 đến 12 chữ số).');
+    $('cicCccd').focus();
+    return;
+  }
+
+  // Đồng bộ lại ô nhập sau khi loại bỏ ký tự lạ.
+  $('cicCccd').value = cccd;
+
+  const btn = $('cicSubmitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>Đang gửi...';
+
+  try{
+    const data = await cicFetch('/cic/request', {
+      method: 'POST',
+      body: JSON.stringify({ fullName, cccd })
+    });
+
+    const requestId = data.requestId || data.id;
+    if(!requestId) throw new Error('Máy chủ không trả về mã yêu cầu.');
+
+    const saved = { id: requestId, fullName, cccd };
+    localStorage.setItem(CIC_REQUEST_KEY, JSON.stringify(saved));
+
+    showCICProcessing(fullName, cccd);
+    pollCICStatus(saved);
+  }catch(e){
+    alert('Không gửi được yêu cầu CIC: ' + e.message);
+  }finally{
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>Tra CIC';
+  }
+}
+
 function pollCICStatus(saved){
   clearInterval(cicPollTimer);
-  const once=async()=>{try{const data=await cicFetch('/cic/status',{method:'POST',body:JSON.stringify({id:saved.id,token:saved.token})});renderCICResult(data.request);if(data.request.status==='done')clearInterval(cicPollTimer)}catch(e){}};
-  once();cicPollTimer=setInterval(once,5000);
+
+  const once = async()=>{
+    try{
+      const data = await cicFetch('/cic/status?id=' + encodeURIComponent(saved.id), {
+        method: 'GET'
+      });
+
+      renderCICResult(data.request);
+
+      if(data.request && data.request.status === 'completed'){
+        clearInterval(cicPollTimer);
+      }
+    }catch(e){
+      // Giữ polling; lỗi mạng tạm thời sẽ được thử lại sau 5 giây.
+    }
+  };
+
+  once();
+  cicPollTimer = setInterval(once, 5000);
 }
+
 function renderCICResult(r){
-  if(!r)return; $('cicResultDetails').style.display='grid';$('cicResultName').textContent=r.fullName||'-';$('cicResultCccd').textContent=r.cccd||'-';
-  if(r.status!=='done'){showCICProcessing(r.fullName,r.cccd);return}
-  const box=$('cicResultStatus');box.className='cic-status done';box.innerHTML='<i class="fa-solid fa-circle-check"></i> Admin đã trả kết quả CIC.';
-  $('cicResultDebt').textContent=cicFormatDebt(r.currentDebt);$('cicResultInstitutions').textContent=String(r.institutions??'-');$('cicResultRisk').textContent=r.riskStatus||'-';
+  if(!r) return;
+
+  $('cicResultDetails').style.display = 'grid';
+  $('cicResultName').textContent = r.fullName || '-';
+  $('cicResultCccd').textContent = r.cccd || '-';
+
+  if(r.status !== 'completed'){
+    showCICProcessing(r.fullName, r.cccd);
+    return;
+  }
+
+  const box = $('cicResultStatus');
+  box.className = 'cic-status done';
+  box.innerHTML = '<i class="fa-solid fa-circle-check"></i> Admin đã trả kết quả CIC.';
+
+  $('cicResultDebt').textContent = cicFormatDebt(r.debt);
+  $('cicResultInstitutions').textContent = String(r.institutions ?? '-');
+  $('cicResultRisk').textContent = r.cicStatus || '-';
 }
+
+/* Admin dùng Basic Auth theo đúng Worker hiện tại.
+   Chuỗi Base64 chỉ được lưu trên trình duyệt của Admin sau khi đăng nhập. */
+function getAdminAuthHeader(){
+  const token = localStorage.getItem(CIC_ADMIN_TOKEN_KEY);
+  return token ? 'Basic ' + token : '';
+}
+
 async function adminLogin(){
-  const username=$('adminUsername').value.trim(),password=$('adminPassword').value;const err=$('adminLoginError');err.style.display='none';
-  if(!username||!password){err.textContent='Vui lòng nhập tên đăng nhập và mật khẩu.';err.style.display='block';return}
-  const btn=$('adminLoginBtn');btn.disabled=true;btn.textContent='ĐANG ĐĂNG NHẬP...';
-  try{const data=await cicFetch('/admin/login',{method:'POST',body:JSON.stringify({username,password})});localStorage.setItem(CIC_ADMIN_TOKEN_KEY,data.token);$('adminPassword').value='';showAdminPanel();await loadAdminRequests()}catch(e){err.textContent=e.message;err.style.display='block'}finally{btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-right-to-bracket"></i>Đăng nhập Admin'}
+  const username = $('adminUsername').value.trim();
+  const password = $('adminPassword').value;
+  const err = $('adminLoginError');
+  err.style.display = 'none';
+
+  if(!username || !password){
+    err.textContent = 'Vui lòng nhập tên đăng nhập và mật khẩu.';
+    err.style.display = 'block';
+    return;
+  }
+
+  const btn = $('adminLoginBtn');
+  btn.disabled = true;
+  btn.textContent = 'ĐANG ĐĂNG NHẬP...';
+
+  try{
+    const basicToken = btoa(unescape(encodeURIComponent(username + ':' + password)));
+
+    // Xác thực trực tiếp bằng endpoint danh sách Admin.
+    const data = await cicFetch('/admin/requests', {
+      method: 'GET',
+      headers: { Authorization: 'Basic ' + basicToken }
+    });
+
+    localStorage.setItem(CIC_ADMIN_TOKEN_KEY, basicToken);
+    $('adminPassword').value = '';
+    showAdminPanel();
+    renderAdminRequests(data.requests || []);
+  }catch(e){
+    localStorage.removeItem(CIC_ADMIN_TOKEN_KEY);
+    err.textContent = e.message;
+    err.style.display = 'block';
+  }finally{
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i>Đăng nhập Admin';
+  }
 }
-function initCICAdmin(){if(localStorage.getItem(CIC_ADMIN_TOKEN_KEY)){showAdminPanel();loadAdminRequests()}else{showAdminLogin()}}
-function showAdminPanel(){$('adminLoginBox').style.display='none';$('adminPanel').style.display='block'}
-function showAdminLogin(){$('adminLoginBox').style.display='block';$('adminPanel').style.display='none'}
-function adminLogout(){localStorage.removeItem(CIC_ADMIN_TOKEN_KEY);showAdminLogin()}
+
+function initCICAdmin(){
+  if(localStorage.getItem(CIC_ADMIN_TOKEN_KEY)){
+    showAdminPanel();
+    loadAdminRequests();
+  }else{
+    showAdminLogin();
+  }
+}
+
+function showAdminPanel(){
+  $('adminLoginBox').style.display = 'none';
+  $('adminPanel').style.display = 'block';
+}
+
+function showAdminLogin(){
+  $('adminLoginBox').style.display = 'block';
+  $('adminPanel').style.display = 'none';
+}
+
+function adminLogout(){
+  localStorage.removeItem(CIC_ADMIN_TOKEN_KEY);
+  showAdminLogin();
+}
+
 async function loadAdminRequests(){
-  const token=localStorage.getItem(CIC_ADMIN_TOKEN_KEY);if(!token){showAdminLogin();return}
-  const list=$('adminRequestList');list.innerHTML='<div class="admin-empty"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải yêu cầu...</div>';
-  try{const data=await cicFetch('/admin/requests',{headers:{Authorization:'Bearer '+token}});renderAdminRequests(data.requests||[])}catch(e){if(/đăng nhập|token|Unauthorized/i.test(e.message)){adminLogout()}list.innerHTML='<div class="admin-empty">'+escapeHtml(e.message)+'</div>'}
+  const auth = getAdminAuthHeader();
+  if(!auth){
+    showAdminLogin();
+    return;
+  }
+
+  const list = $('adminRequestList');
+  list.innerHTML = '<div class="admin-empty"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải yêu cầu...</div>';
+
+  try{
+    const data = await cicFetch('/admin/requests', {
+      method: 'GET',
+      headers: { Authorization: auth }
+    });
+    renderAdminRequests(data.requests || []);
+  }catch(e){
+    if(/tài khoản|mật khẩu|Unauthorized|401/i.test(e.message)){
+      adminLogout();
+    }
+    list.innerHTML = '<div class="admin-empty">' + escapeHtml(e.message) + '</div>';
+  }
 }
-function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+
+function escapeHtml(v){
+  return String(v ?? '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#039;'
+  }[c]));
+}
+
 function renderAdminRequests(rows){
-  const list=$('adminRequestList');if(!rows.length){list.innerHTML='<div class="admin-empty">Chưa có yêu cầu CIC nào.</div>';return}
-  list.innerHTML=rows.map(r=>{const id=escapeHtml(r.id),done=r.status==='done';return `<div class="admin-request"><div class="admin-request-top"><div><div class="admin-customer">${escapeHtml(r.fullName)}</div><div class="admin-meta">CCCD: ${escapeHtml(r.cccd)} • ${new Date(r.createdAt).toLocaleString('vi-VN')}</div></div><span class="admin-badge ${done?'done':''}">${done?'Đã trả kết quả':'Đang xử lý'}</span></div><div class="admin-fields"><div class="field"><label>Dư nợ hiện tại (VND)</label><input id="debt_${id}" inputmode="numeric" value="${r.currentDebt?Number(r.currentDebt).toLocaleString('vi-VN'):''}" oninput="moneyInput(this)" placeholder="0"></div><div class="field"><label>Số TCTD</label><input id="inst_${id}" type="number" min="0" step="1" value="${escapeHtml(r.institutions??'')}" placeholder="0"></div></div><div class="admin-status-options"><label><input type="radio" name="risk_${id}" value="Không nợ xấu" ${r.riskStatus==='Không nợ xấu'?'checked':''}>Không nợ xấu</label><label><input type="radio" name="risk_${id}" value="Nợ chú ý" ${r.riskStatus==='Nợ chú ý'?'checked':''}>Nợ chú ý</label><label><input type="radio" name="risk_${id}" value="Nợ xấu" ${r.riskStatus==='Nợ xấu'?'checked':''}>Nợ xấu</label></div><div class="admin-submit"><button class="btn green" type="button" onclick="sendCICResult('${id}')"><i class="fa-solid fa-paper-plane"></i>Trả kết quả</button></div></div>`}).join('')
+  const list = $('adminRequestList');
+
+  if(!rows.length){
+    list.innerHTML = '<div class="admin-empty">Chưa có yêu cầu CIC nào.</div>';
+    return;
+  }
+
+  list.innerHTML = rows.map(r=>{
+    const id = escapeHtml(r.id);
+    const done = r.status === 'completed';
+
+    return `<div class="admin-request">
+      <div class="admin-request-top">
+        <div>
+          <div class="admin-customer">${escapeHtml(r.fullName)}</div>
+          <div class="admin-meta">CCCD: ${escapeHtml(r.cccd)} • ${r.createdAt ? new Date(r.createdAt).toLocaleString('vi-VN') : ''}</div>
+        </div>
+        <span class="admin-badge ${done?'done':''}">${done?'Đã trả kết quả':'Đang xử lý'}</span>
+      </div>
+
+      <div class="admin-fields">
+        <div class="field">
+          <label>Dư nợ hiện tại (VND)</label>
+          <input id="debt_${id}" inputmode="numeric"
+            value="${r.debt ? Number(String(r.debt).replace(/\D/g,'')).toLocaleString('vi-VN') : ''}"
+            oninput="moneyInput(this)" placeholder="0">
+        </div>
+
+        <div class="field">
+          <label>Số TCTD</label>
+          <input id="inst_${id}" type="number" min="0" step="1"
+            value="${escapeHtml(r.institutions ?? '')}" placeholder="0">
+        </div>
+      </div>
+
+      <div class="admin-status-options">
+        <label><input type="radio" name="risk_${id}" value="Không nợ xấu" ${r.cicStatus==='Không nợ xấu'?'checked':''}>Không nợ xấu</label>
+        <label><input type="radio" name="risk_${id}" value="Nợ chú ý" ${r.cicStatus==='Nợ chú ý'?'checked':''}>Nợ chú ý</label>
+        <label><input type="radio" name="risk_${id}" value="Nợ xấu" ${r.cicStatus==='Nợ xấu'?'checked':''}>Nợ xấu</label>
+      </div>
+
+      <div class="admin-submit">
+        <button class="btn green" type="button" onclick="sendCICResult('${id}')">
+          <i class="fa-solid fa-paper-plane"></i>Trả kết quả
+        </button>
+      </div>
+    </div>`;
+  }).join('');
 }
+
 async function sendCICResult(id){
-  const token=localStorage.getItem(CIC_ADMIN_TOKEN_KEY),risk=document.querySelector(`input[name="risk_${CSS.escape(id)}"]:checked`);const currentDebt=num($('debt_'+id).value),institutions=parseInt($('inst_'+id).value||'0',10);
-  if(!risk){alert('Vui lòng chọn trạng thái CIC.');return} if(institutions<0){alert('Số TCTD không hợp lệ.');return}
-  try{await cicFetch('/admin/result',{method:'POST',headers:{Authorization:'Bearer '+token},body:JSON.stringify({id,currentDebt,institutions,riskStatus:risk.value})});alert('Đã trả kết quả cho nhân viên.');await loadAdminRequests()}catch(e){alert('Không trả được kết quả: '+e.message)}
+  const auth = getAdminAuthHeader();
+  if(!auth){
+    adminLogout();
+    return;
+  }
+
+  const risk = document.querySelector(`input[name="risk_${CSS.escape(id)}"]:checked`);
+  const debtDigits = String($('debt_'+id).value || '').replace(/\D/g,'');
+  const debt = debtDigits || '0';
+  const institutions = parseInt($('inst_'+id).value || '0', 10);
+
+  if(!risk){
+    alert('Vui lòng chọn trạng thái CIC.');
+    return;
+  }
+
+  if(!Number.isInteger(institutions) || institutions < 0){
+    alert('Số TCTD không hợp lệ.');
+    return;
+  }
+
+  try{
+    await cicFetch('/admin/result', {
+      method: 'POST',
+      headers: { Authorization: auth },
+      body: JSON.stringify({
+        id,
+        debt,
+        institutions,
+        cicStatus: risk.value
+      })
+    });
+
+    alert('Đã trả kết quả cho nhân viên.');
+    await loadAdminRequests();
+  }catch(e){
+    alert('Không trả được kết quả: ' + e.message);
+  }
 }
 
 window.addEventListener('DOMContentLoaded',()=>{setDefaultDates();const s=localStorage.getItem('plData');if(s)try{let x=JSON.parse(s);$('plDisb').value=x.disb||$('plDisb').value;$('plFirst').value=x.first||$('plFirst').value;$('plLoan').value=x.loan||'';$('plIns').value=x.ins||'7,7';$('plRate').value=x.rate||'52';$('plTenure').value=x.tenure||24}catch(e){}});
