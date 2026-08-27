@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="cic-build" content="2026-08-27-CCCD-FINAL-NO-REGEX">
+<meta name="cic-build" content="2026-08-27-CCCD-MASK-MIDDLE4">
 <title>TÍNH LÃI SUẤT - PL & TOPUP</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -531,8 +531,9 @@ function cicFormatDebt(v){
 }
 
 function cicMaskCccd(v){
-  v = String(v || '');
-  return v.length > 8 ? v.slice(0,4) + '••••' + v.slice(-4) : v;
+  v = String(v || '').replace(/\D/g,'');
+  if(v.length <= 8) return v;
+  return v.slice(0,4) + '****' + v.slice(-4);
 }
 
 function initCICEmployee(){
@@ -553,7 +554,7 @@ function showCICProcessing(fullName, cccd){
   box.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý. Yêu cầu đã được gửi đến Admin.';
   $('cicResultDetails').style.display = 'grid';
   $('cicResultName').textContent = fullName || '-';
-  $('cicResultCccd').textContent = cccd || '-';
+  $('cicResultCccd').textContent = cicMaskCccd(cccd) || '-';
   $('cicResultDebt').textContent = 'Đang chờ';
   $('cicResultInstitutions').textContent = 'Đang chờ';
   $('cicResultRisk').textContent = 'Đang chờ Admin trả kết quả';
@@ -637,7 +638,7 @@ function renderCICResult(r){
 
   $('cicResultDetails').style.display = 'grid';
   $('cicResultName').textContent = r.fullName || '-';
-  $('cicResultCccd').textContent = r.cccd || '-';
+  $('cicResultCccd').textContent = cicMaskCccd(r.cccd) || '-';
 
   if(r.status !== 'completed'){
     showCICProcessing(r.fullName, r.cccd);
