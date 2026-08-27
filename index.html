@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="cic-build" content="2026-08-27-fix-cccd-v2">
+<meta name="cic-build" content="2026-08-27-CCCD-FINAL-NO-REGEX">
 <title>TÍNH LÃI SUẤT - PL & TOPUP</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -102,6 +102,15 @@ padding:7px 12px;color:#14577f;font-size:14px
 
 
 /* ===== CIC + ADMIN ===== */
+function sanitizeCICCCCD(el){
+  let s = String(el.value || '');
+  let digits = '';
+  for (const ch of s) {
+    if (ch >= '0' && ch <= '9') digits += ch;
+  }
+  el.value = digits.slice(0, 12);
+}
+
 .cic-card{max-width:900px;margin:0 auto}.cic-form{display:grid;grid-template-columns:1fr 1fr;gap:18px}.cic-actions{display:flex;justify-content:center;margin-top:18px}.cic-result{margin-top:22px;border:1px solid #d8e5f2;border-radius:13px;background:linear-gradient(180deg,#f7fbff,#eef7ff);padding:18px}.cic-result-title{font-weight:800;color:#123d70;margin-bottom:10px}.cic-status{padding:13px 14px;background:#fff;border:1px solid #dce5ee;border-radius:10px;color:#536a86;line-height:1.65}.cic-status.processing{color:#a75b00;background:#fff9ee;border-color:#f2ddb8}.cic-status.done{color:#08763e;background:#f1fff7;border-color:#bfe8cf}.cic-result-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.cic-result-item{background:#fff;border:1px solid #dce5ee;border-radius:10px;padding:12px}.cic-result-item small{display:block;color:#6b7f96;margin-bottom:4px}.cic-result-item strong{color:#173b68}.admin-login{max-width:520px;margin:0 auto}.admin-panel{display:none}.admin-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}.admin-list{display:grid;gap:14px}.admin-request{border:1px solid #d9e4ef;border-radius:13px;padding:16px;background:#fff}.admin-request-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:13px}.admin-customer{font-size:16px;font-weight:800;color:#123d70}.admin-meta{font-size:12px;color:#73859a;margin-top:3px}.admin-fields{display:grid;grid-template-columns:1fr 1fr;gap:13px}.admin-status-options{display:flex;gap:16px;flex-wrap:wrap;margin-top:13px;padding:12px;background:#f7faff;border-radius:10px}.admin-status-options label{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:#294866}.admin-status-options input{width:17px;height:17px;accent-color:#0868d9}.admin-submit{margin-top:13px;display:flex;justify-content:flex-end}.admin-empty{text-align:center;padding:35px 15px;color:#718399}.admin-badge{font-size:11px;font-weight:800;border-radius:18px;padding:6px 10px;background:#fff4df;color:#9b5d00;white-space:nowrap}.admin-badge.done{background:#eafaf1;color:#08763e}.admin-login-note{margin-top:10px;font-size:12px;color:#6c7f96;line-height:1.6}.nav{overflow-x:auto}.nav button{min-width:150px}
 @media(max-width:650px){.cic-form,.cic-result-grid,.admin-fields{grid-template-columns:1fr}.admin-request-top,.admin-toolbar{flex-direction:column}.admin-submit .btn{width:100%}.nav{justify-content:flex-start}}
 
@@ -279,7 +288,7 @@ Từ <strong id="idcardMonthlyMin">0 VND</strong> đến <strong id="idcardMonth
     </div>
     <div class="cic-form">
       <div class="field"><label><i class="fa-solid fa-user"></i>Họ Tên</label><input id="cicFullName" autocomplete="name" placeholder="Nhập họ tên khách hàng"></div>
-      <div class="field"><label><i class="fa-solid fa-id-card"></i>Số CCCD</label><input id="cicCccd" inputmode="numeric" maxlength="12" placeholder="Nhập số CCCD" oninput="this.value=this.value.replace(/\D/g,'').slice(0,12)"></div>
+      <div class="field"><label><i class="fa-solid fa-id-card"></i>Số CCCD</label><input id="cicCccd" inputmode="numeric" maxlength="12" placeholder="Nhập số CCCD" oninput="sanitizeCICCCCD(this)"></div>
     </div>
     <div class="cic-actions"><button id="cicSubmitBtn" class="btn blue" type="button" onclick="submitCICRequest()"><i class="fa-solid fa-paper-plane"></i>Tra CIC</button></div>
     <div class="cic-result">
@@ -552,7 +561,15 @@ function showCICProcessing(fullName, cccd){
 
 async function submitCICRequest(){
   const fullName = $('cicFullName').value.trim();
-  const cccd = $('cicCccd').value.replace(/\D/g,'').trim();
+
+  // Chỉ lấy ký tự số, không dùng regex để tránh lỗi escape khi deploy.
+  let raw = String($('cicCccd').value || '');
+  let cccd = '';
+  for (const ch of raw) {
+    if (ch >= '0' && ch <= '9') cccd += ch;
+  }
+  cccd = cccd.slice(0,12);
+  $('cicCccd').value = cccd;
 
   if(fullName.length < 2){
     alert('Vui lòng nhập họ tên.');
@@ -560,14 +577,11 @@ async function submitCICRequest(){
     return;
   }
 
-  if(!/^\d{9,12}$/.test(cccd)){
-    alert('Vui lòng nhập số CCCD hợp lệ (9 đến 12 chữ số).');
+  if(cccd.length < 9 || cccd.length > 12){
+    alert('CCCD phải có từ 9 đến 12 chữ số.');
     $('cicCccd').focus();
     return;
   }
-
-  // Đồng bộ lại ô nhập sau khi loại bỏ ký tự lạ.
-  $('cicCccd').value = cccd;
 
   const btn = $('cicSubmitBtn');
   btn.disabled = true;
