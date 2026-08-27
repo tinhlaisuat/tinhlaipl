@@ -314,7 +314,7 @@ Từ <strong id="idcardMonthlyMin">0 VND</strong> đến <strong id="idcardMonth
       <div class="field" style="margin-top:14px"><label><i class="fa-solid fa-lock"></i>Mật khẩu Admin</label><input id="adminPassword" type="password" autocomplete="current-password" placeholder="Mật khẩu" onkeydown="if(event.key==='Enter'){adminLogin()}"></div>
       <button id="adminLoginBtn" class="btn blue" type="button" onclick="adminLogin()" style="width:100%;margin-top:16px"><i class="fa-solid fa-right-to-bracket"></i>Đăng nhập Admin</button>
       <div id="adminLoginError" style="display:none;color:#d93025;font-size:13px;font-weight:700;margin-top:10px"></div>
-      <div class="admin-login-note">Tài khoản và mật khẩu Admin được xác thực ở máy chủ, không lưu trực tiếp trong mã HTML.</div>
+      <div class="admin-login-note">Tài khoản và mật khẩu Admin được xác thực ở máy chủ.</div>
     </div>
     <div id="adminPanel" class="admin-panel">
       <div class="admin-toolbar">
@@ -543,10 +543,10 @@ async function cicFetch(path, options={}){
 
 function cicFormatDebt(v){
   const raw = String(v ?? '').trim();
-  if(!raw) return '0 VND';
+  if(!raw) return '0 Triệu';
   const digits = raw.replace(/\D/g,'');
   if(!digits) return raw;
-  return Number(digits).toLocaleString('vi-VN') + ' VND';
+  return Number(digits).toLocaleString('vi-VN') + ' Triệu';
 }
 
 function cicMaskCccd(v){
@@ -954,7 +954,7 @@ function renderAdminRequests(rows){
 
         <div class="admin-fields">
           <div class="field">
-            <label>Dư nợ hiện tại (VND)</label>
+            <label>Dư nợ hiện tại (Triệu)</label>
             <input id="debt_${id}" inputmode="numeric"
               value=""
               oninput="moneyInput(this)" placeholder="0">
@@ -988,8 +988,8 @@ function renderAdminRequests(rows){
   }else{
     completedList.innerHTML = completed.map(r=>{
       const debtText = r.debt
-        ? Number(String(r.debt).replace(/\D/g,'')).toLocaleString('vi-VN') + ' VND'
-        : '0 VND';
+        ? Number(String(r.debt).replace(/\D/g,'')).toLocaleString('vi-VN') + ' Triệu'
+        : '0 Triệu';
 
       return `<div class="admin-completed-card">
         <div class="admin-request-top" style="margin-bottom:0">
