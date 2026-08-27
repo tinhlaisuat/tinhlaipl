@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="cic-build" content="2026-08-27-CIC-HISTORY-CLICK-VIEW">
+<meta name="cic-build" content="2026-08-27-CIC-FINAL-PENDING-COMPLETED">
 <title>TÍNH LÃI SUẤT - PL & TOPUP</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -116,7 +116,7 @@ function sanitizeCICCCCD(el){
 
 
 .cic-history{margin-top:18px;border:1px solid #d8e5f2;border-radius:13px;background:#fff;padding:14px}
-.cic-history-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+.cic-history-head{display:flex;align-items:center;gap:12px;margin-bottom:10px}
 .cic-history-head strong{color:#123d70}
 .cic-history-list{display:grid;gap:9px}
 .cic-history-item{border:1px solid #e0e7ef;border-radius:10px;padding:11px 12px;background:#f9fbfe;cursor:pointer}
@@ -134,6 +134,14 @@ function sanitizeCICCCCD(el){
 .cic-history-search input{height:42px}
 .cic-history-count{font-size:12px;color:#6b7f96;white-space:nowrap}
 @media(max-width:650px){.cic-history-search{flex-direction:column;align-items:stretch}.cic-history-count{white-space:normal}}
+
+
+.admin-completed-card{border:1px solid #cfe7d8;border-radius:13px;padding:14px 16px;background:#f7fffa}
+.admin-completed-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.admin-completed-item{background:#fff;border:1px solid #dfebe4;border-radius:9px;padding:10px}
+.admin-completed-item small{display:block;color:#718399;margin-bottom:3px}
+.admin-completed-item strong{color:#173b68}
+@media(max-width:650px){.admin-completed-grid{grid-template-columns:1fr}}
 
 </style>
 </head>
@@ -327,9 +335,6 @@ Từ <strong id="idcardMonthlyMin">0 VND</strong> đến <strong id="idcardMonth
     <div class="cic-history">
       <div class="cic-history-head">
         <strong><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử tra CIC <span style="font-size:11px;font-weight:600;color:#6b7f96">(bấm khách hàng để xem lại)</span></strong>
-        <button class="btn white" type="button" style="height:38px;padding:0 12px" onclick="clearCICHistory()">
-          <i class="fa-solid fa-trash"></i>Xóa lịch sử
-        </button>
       </div>
       <div class="cic-history-search">
         <input id="cicHistorySearch" type="search" placeholder="Tìm theo tên khách hàng hoặc CCCD..." oninput="renderCICHistory()">
@@ -356,8 +361,29 @@ Từ <strong id="idcardMonthlyMin">0 VND</strong> đến <strong id="idcardMonth
       <div class="admin-login-note">Tài khoản và mật khẩu Admin được xác thực ở máy chủ, không lưu trực tiếp trong mã HTML.</div>
     </div>
     <div id="adminPanel" class="admin-panel">
-      <div class="admin-toolbar"><strong>Danh sách yêu cầu CIC</strong><div style="display:flex;gap:8px"><button class="btn white" style="height:40px" onclick="loadAdminRequests()"><i class="fa-solid fa-rotate"></i>Làm mới</button><button class="btn red" style="height:40px" onclick="adminLogout()"><i class="fa-solid fa-right-from-bracket"></i>Đăng xuất</button></div></div>
-      <div id="adminRequestList" class="admin-list"><div class="admin-empty">Chưa tải dữ liệu.</div></div>
+      <div class="admin-toolbar">
+        <div>
+          <strong>Chưa trả kết quả <span id="adminPendingCount" style="font-size:12px;color:#6b7f96"></span></strong>
+          <div style="font-size:12px;color:#718399;margin-top:3px">Chỉ hiển thị các yêu cầu Admin chưa xử lý.</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn white" style="height:40px" onclick="loadAdminRequests()"><i class="fa-solid fa-rotate"></i>Làm mới</button>
+          <button class="btn red" style="height:40px" onclick="adminLogout()"><i class="fa-solid fa-right-from-bracket"></i>Đăng xuất</button>
+        </div>
+      </div>
+
+      <div id="adminRequestList" class="admin-list">
+        <div class="admin-empty">Chưa tải dữ liệu.</div>
+      </div>
+
+      <div class="admin-completed-section" style="margin-top:24px;padding-top:18px;border-top:2px solid #e7eef6">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px">
+          <strong style="color:#123d70"><i class="fa-solid fa-circle-check" style="color:#119b4d;margin-right:6px"></i>Đã trả kết quả <span id="adminCompletedCount" style="font-size:12px;color:#6b7f96"></span></strong>
+        </div>
+        <div id="adminCompletedList" class="admin-list">
+          <div class="admin-empty">Chưa có yêu cầu đã trả kết quả.</div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -663,10 +689,7 @@ async function openCICHistory(id){
   const selected = document.querySelector(`.cic-history-item[data-cic-id="${CSS.escape(id)}"]`);
   if(selected) selected.classList.add('selected');
 
-  // Điền lại thông tin khách hàng lên ô Tra CIC
-  $('cicFullName').value = item.fullName || '';
-  $('cicCccd').value = item.cccd || '';
-
+  // Chỉ mở lại kết quả; không điền lại vào ô Tra CIC để tránh nhầm khi nhập khách mới.
   // Lấy dữ liệu mới nhất từ máy chủ để đảm bảo lịch sử luôn hiện đủ thông tin.
   try{
     const data = await cicFetch('/cic/status?id=' + encodeURIComponent(id), {
@@ -788,6 +811,11 @@ async function submitCICRequest(){
     upsertCICHistory(saved);
 
     showCICProcessing(fullName, cccd);
+
+    // Sau khi gửi yêu cầu thành công, làm trống ô nhập để sẵn sàng tra khách tiếp theo.
+    $('cicFullName').value = '';
+    $('cicCccd').value = '';
+
     pollCICStatus(saved);
   }catch(e){
     alert('Không gửi được yêu cầu CIC: ' + e.message);
@@ -977,54 +1005,96 @@ function escapeHtml(v){
 }
 
 function renderAdminRequests(rows){
-  const list = $('adminRequestList');
+  const pendingList = $('adminRequestList');
+  const completedList = $('adminCompletedList');
 
-  if(!rows.length){
-    list.innerHTML = '<div class="admin-empty">Chưa có yêu cầu CIC nào.</div>';
-    return;
+  const pending = (rows || []).filter(r => r.status !== 'completed');
+  const completed = (rows || []).filter(r => r.status === 'completed');
+
+  if($('adminPendingCount')) $('adminPendingCount').textContent = `(${pending.length})`;
+  if($('adminCompletedCount')) $('adminCompletedCount').textContent = `(${completed.length})`;
+
+  // ===== CHƯA TRẢ KẾT QUẢ =====
+  if(!pending.length){
+    pendingList.innerHTML = '<div class="admin-empty">Không còn yêu cầu CIC nào đang chờ xử lý.</div>';
+  }else{
+    pendingList.innerHTML = pending.map(r=>{
+      const id = escapeHtml(r.id);
+
+      return `<div class="admin-request">
+        <div class="admin-request-top">
+          <div>
+            <div class="admin-customer">${escapeHtml(r.fullName)}</div>
+            <div class="admin-meta">CCCD: ${escapeHtml(r.cccd)} • ${r.createdAt ? new Date(r.createdAt).toLocaleString('vi-VN') : ''}</div>
+          </div>
+          <span class="admin-badge">Đang xử lý</span>
+        </div>
+
+        <div class="admin-fields">
+          <div class="field">
+            <label>Dư nợ hiện tại (VND)</label>
+            <input id="debt_${id}" inputmode="numeric"
+              value=""
+              oninput="moneyInput(this)" placeholder="0">
+          </div>
+
+          <div class="field">
+            <label>Số TCTD</label>
+            <input id="inst_${id}" type="number" min="0" step="1"
+              value="" placeholder="0">
+          </div>
+        </div>
+
+        <div class="admin-status-options">
+          <label><input type="radio" name="risk_${id}" value="Không nợ xấu">Không nợ xấu</label>
+          <label><input type="radio" name="risk_${id}" value="Nợ chú ý">Nợ chú ý</label>
+          <label><input type="radio" name="risk_${id}" value="Nợ xấu">Nợ xấu</label>
+        </div>
+
+        <div class="admin-submit">
+          <button class="btn green" type="button" onclick="sendCICResult('${id}')">
+            <i class="fa-solid fa-paper-plane"></i>Trả kết quả
+          </button>
+        </div>
+      </div>`;
+    }).join('');
   }
 
-  list.innerHTML = rows.map(r=>{
-    const id = escapeHtml(r.id);
-    const done = r.status === 'completed';
+  // ===== ĐÃ TRẢ KẾT QUẢ =====
+  if(!completed.length){
+    completedList.innerHTML = '<div class="admin-empty">Chưa có yêu cầu đã trả kết quả.</div>';
+  }else{
+    completedList.innerHTML = completed.map(r=>{
+      const debtText = r.debt
+        ? Number(String(r.debt).replace(/\D/g,'')).toLocaleString('vi-VN') + ' VND'
+        : '0 VND';
 
-    return `<div class="admin-request">
-      <div class="admin-request-top">
-        <div>
-          <div class="admin-customer">${escapeHtml(r.fullName)}</div>
-          <div class="admin-meta">CCCD: ${escapeHtml(r.cccd)} • ${r.createdAt ? new Date(r.createdAt).toLocaleString('vi-VN') : ''}</div>
-        </div>
-        <span class="admin-badge ${done?'done':''}">${done?'Đã trả kết quả':'Đang xử lý'}</span>
-      </div>
-
-      <div class="admin-fields">
-        <div class="field">
-          <label>Dư nợ hiện tại (VND)</label>
-          <input id="debt_${id}" inputmode="numeric"
-            value="${r.debt ? Number(String(r.debt).replace(/\D/g,'')).toLocaleString('vi-VN') : ''}"
-            oninput="moneyInput(this)" placeholder="0">
+      return `<div class="admin-completed-card">
+        <div class="admin-request-top" style="margin-bottom:0">
+          <div>
+            <div class="admin-customer">${escapeHtml(r.fullName)}</div>
+            <div class="admin-meta">CCCD: ${escapeHtml(r.cccd)} • ${r.completedAt ? 'Trả lúc ' + new Date(r.completedAt).toLocaleString('vi-VN') : ''}</div>
+          </div>
+          <span class="admin-badge done">Đã trả kết quả</span>
         </div>
 
-        <div class="field">
-          <label>Số TCTD</label>
-          <input id="inst_${id}" type="number" min="0" step="1"
-            value="${escapeHtml(r.institutions ?? '')}" placeholder="0">
+        <div class="admin-completed-grid">
+          <div class="admin-completed-item">
+            <small>Dư nợ hiện tại</small>
+            <strong>${escapeHtml(debtText)}</strong>
+          </div>
+          <div class="admin-completed-item">
+            <small>Số TCTD</small>
+            <strong>${escapeHtml(r.institutions ?? '0')}</strong>
+          </div>
+          <div class="admin-completed-item">
+            <small>Trạng thái CIC</small>
+            <strong>${escapeHtml(r.cicStatus || '-')}</strong>
+          </div>
         </div>
-      </div>
-
-      <div class="admin-status-options">
-        <label><input type="radio" name="risk_${id}" value="Không nợ xấu" ${r.cicStatus==='Không nợ xấu'?'checked':''}>Không nợ xấu</label>
-        <label><input type="radio" name="risk_${id}" value="Nợ chú ý" ${r.cicStatus==='Nợ chú ý'?'checked':''}>Nợ chú ý</label>
-        <label><input type="radio" name="risk_${id}" value="Nợ xấu" ${r.cicStatus==='Nợ xấu'?'checked':''}>Nợ xấu</label>
-      </div>
-
-      <div class="admin-submit">
-        <button class="btn green" type="button" onclick="sendCICResult('${id}')">
-          <i class="fa-solid fa-paper-plane"></i>Trả kết quả
-        </button>
-      </div>
-    </div>`;
-  }).join('');
+      </div>`;
+    }).join('');
+  }
 }
 
 async function sendCICResult(id){
