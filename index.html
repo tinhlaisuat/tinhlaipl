@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="cic-build" content="2026-08-27-CCCD-MASK-MIDDLE4">
+<meta name="cic-build" content="2026-08-27-CIC-HISTORY-500-SEARCH">
 <title>TÍNH LÃI SUẤT - PL & TOPUP</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -113,6 +113,27 @@ function sanitizeCICCCCD(el){
 
 .cic-card{max-width:900px;margin:0 auto}.cic-form{display:grid;grid-template-columns:1fr 1fr;gap:18px}.cic-actions{display:flex;justify-content:center;margin-top:18px}.cic-result{margin-top:22px;border:1px solid #d8e5f2;border-radius:13px;background:linear-gradient(180deg,#f7fbff,#eef7ff);padding:18px}.cic-result-title{font-weight:800;color:#123d70;margin-bottom:10px}.cic-status{padding:13px 14px;background:#fff;border:1px solid #dce5ee;border-radius:10px;color:#536a86;line-height:1.65}.cic-status.processing{color:#a75b00;background:#fff9ee;border-color:#f2ddb8}.cic-status.done{color:#08763e;background:#f1fff7;border-color:#bfe8cf}.cic-result-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.cic-result-item{background:#fff;border:1px solid #dce5ee;border-radius:10px;padding:12px}.cic-result-item small{display:block;color:#6b7f96;margin-bottom:4px}.cic-result-item strong{color:#173b68}.admin-login{max-width:520px;margin:0 auto}.admin-panel{display:none}.admin-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}.admin-list{display:grid;gap:14px}.admin-request{border:1px solid #d9e4ef;border-radius:13px;padding:16px;background:#fff}.admin-request-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:13px}.admin-customer{font-size:16px;font-weight:800;color:#123d70}.admin-meta{font-size:12px;color:#73859a;margin-top:3px}.admin-fields{display:grid;grid-template-columns:1fr 1fr;gap:13px}.admin-status-options{display:flex;gap:16px;flex-wrap:wrap;margin-top:13px;padding:12px;background:#f7faff;border-radius:10px}.admin-status-options label{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:#294866}.admin-status-options input{width:17px;height:17px;accent-color:#0868d9}.admin-submit{margin-top:13px;display:flex;justify-content:flex-end}.admin-empty{text-align:center;padding:35px 15px;color:#718399}.admin-badge{font-size:11px;font-weight:800;border-radius:18px;padding:6px 10px;background:#fff4df;color:#9b5d00;white-space:nowrap}.admin-badge.done{background:#eafaf1;color:#08763e}.admin-login-note{margin-top:10px;font-size:12px;color:#6c7f96;line-height:1.6}.nav{overflow-x:auto}.nav button{min-width:150px}
 @media(max-width:650px){.cic-form,.cic-result-grid,.admin-fields{grid-template-columns:1fr}.admin-request-top,.admin-toolbar{flex-direction:column}.admin-submit .btn{width:100%}.nav{justify-content:flex-start}}
+
+
+.cic-history{margin-top:18px;border:1px solid #d8e5f2;border-radius:13px;background:#fff;padding:14px}
+.cic-history-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+.cic-history-head strong{color:#123d70}
+.cic-history-list{display:grid;gap:9px}
+.cic-history-item{border:1px solid #e0e7ef;border-radius:10px;padding:11px 12px;background:#f9fbfe;cursor:pointer}
+.cic-history-item:hover{background:#f1f7ff}
+.cic-history-top{display:flex;justify-content:space-between;gap:12px}
+.cic-history-name{font-weight:800;color:#163b6b}
+.cic-history-meta{font-size:12px;color:#6b7f96;margin-top:4px}
+.cic-history-status{font-size:11px;font-weight:800;border-radius:14px;padding:4px 8px;background:#fff4df;color:#9b5d00;white-space:nowrap}
+.cic-history-status.done{background:#eafaf1;color:#08763e}
+.cic-history-empty{padding:16px;text-align:center;color:#718399}
+@media(max-width:650px){.cic-history-top{flex-direction:column}.cic-history-status{width:max-content}}
+
+
+.cic-history-search{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.cic-history-search input{height:42px}
+.cic-history-count{font-size:12px;color:#6b7f96;white-space:nowrap}
+@media(max-width:650px){.cic-history-search{flex-direction:column;align-items:stretch}.cic-history-count{white-space:normal}}
 
 </style>
 </head>
@@ -300,6 +321,22 @@ Từ <strong id="idcardMonthlyMin">0 VND</strong> đến <strong id="idcardMonth
         <div class="cic-result-item"><small>Dư nợ hiện tại</small><strong id="cicResultDebt">-</strong></div>
         <div class="cic-result-item"><small>Số TCTD</small><strong id="cicResultInstitutions">-</strong></div>
         <div class="cic-result-item" style="grid-column:1/-1"><small>Trạng thái CIC</small><strong id="cicResultRisk">-</strong></div>
+      </div>
+    </div>
+
+    <div class="cic-history">
+      <div class="cic-history-head">
+        <strong><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử tra CIC</strong>
+        <button class="btn white" type="button" style="height:38px;padding:0 12px" onclick="clearCICHistory()">
+          <i class="fa-solid fa-trash"></i>Xóa lịch sử
+        </button>
+      </div>
+      <div class="cic-history-search">
+        <input id="cicHistorySearch" type="search" placeholder="Tìm theo tên khách hàng hoặc CCCD..." oninput="renderCICHistory()">
+        <span id="cicHistoryCount" class="cic-history-count"></span>
+      </div>
+      <div id="cicHistoryList" class="cic-history-list">
+        <div class="cic-history-empty">Chưa có lịch sử tra CIC.</div>
       </div>
     </div>
   </div>
@@ -506,6 +543,7 @@ function copyDonateContent(){
 const CIC_API_BASE = 'https://cic-api.thien-miraeasset.workers.dev';
 const CIC_ADMIN_TOKEN_KEY = 'tlsCicAdminToken';
 const CIC_REQUEST_KEY = 'tlsCicLastRequest';
+const CIC_HISTORY_KEY = 'tlsCicHistory';
 let cicPollTimer = null;
 
 async function cicFetch(path, options={}){
@@ -536,14 +574,116 @@ function cicMaskCccd(v){
   return v.slice(0,4) + '****' + v.slice(-4);
 }
 
+
+function getCICHistory(){
+  try{
+    const arr = JSON.parse(localStorage.getItem(CIC_HISTORY_KEY) || '[]');
+    return Array.isArray(arr) ? arr : [];
+  }catch(e){
+    return [];
+  }
+}
+
+function saveCICHistory(arr){
+  localStorage.setItem(CIC_HISTORY_KEY, JSON.stringify(arr.slice(0,500)));
+}
+
+function upsertCICHistory(item){
+  const arr = getCICHistory();
+  const index = arr.findIndex(x => x.id === item.id);
+  if(index >= 0) arr[index] = {...arr[index], ...item};
+  else arr.unshift(item);
+  saveCICHistory(arr);
+  renderCICHistory();
+}
+
+function renderCICHistory(){
+  const box = $('cicHistoryList');
+  if(!box) return;
+
+  const arr = getCICHistory();
+  const searchEl = $('cicHistorySearch');
+  const q = String(searchEl ? searchEl.value : '').trim().toLowerCase();
+
+  let filtered = arr;
+  if(q){
+    const qDigits = q.replace(/\D/g,'');
+    filtered = arr.filter(x => {
+      const name = String(x.fullName || '').toLowerCase();
+      const cccd = String(x.cccd || '');
+      return name.includes(q) || (qDigits && cccd.includes(qDigits));
+    });
+  }
+
+  const countEl = $('cicHistoryCount');
+  if(countEl){
+    countEl.textContent = q
+      ? `Tìm thấy ${filtered.length}/${arr.length} lượt`
+      : `${arr.length}/500 lượt đã lưu`;
+  }
+
+  if(!arr.length){
+    box.innerHTML = '<div class="cic-history-empty">Chưa có lịch sử tra CIC.</div>';
+    return;
+  }
+
+  if(!filtered.length){
+    box.innerHTML = '<div class="cic-history-empty">Không tìm thấy khách hàng phù hợp.</div>';
+    return;
+  }
+
+  box.innerHTML = filtered.map(x => {
+    const done = x.status === 'completed';
+    const created = x.createdAt ? new Date(x.createdAt).toLocaleString('vi-VN') : '';
+    return `<div class="cic-history-item" onclick="openCICHistory('${escapeHtml(x.id)}')">
+      <div class="cic-history-top">
+        <div>
+          <div class="cic-history-name">${escapeHtml(x.fullName || '-')}</div>
+          <div class="cic-history-meta">CCCD: ${escapeHtml(cicMaskCccd(x.cccd || ''))}${created ? ' • ' + escapeHtml(created) : ''}</div>
+        </div>
+        <span class="cic-history-status ${done ? 'done' : ''}">${done ? 'Đã có kết quả' : 'Đang xử lý'}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function clearCICHistory(){
+  if(!confirm('Xóa toàn bộ lịch sử tra CIC trên thiết bị này?')) return;
+  localStorage.removeItem(CIC_HISTORY_KEY);
+  localStorage.removeItem(CIC_REQUEST_KEY);
+  renderCICHistory();
+}
+
+async function openCICHistory(id){
+  const item = getCICHistory().find(x => x.id === id);
+  if(!item) return;
+
+  $('cicFullName').value = item.fullName || '';
+  $('cicCccd').value = item.cccd || '';
+  localStorage.setItem(CIC_REQUEST_KEY, JSON.stringify(item));
+
+  if(item.status === 'completed'){
+    renderCICResult(item);
+  }else{
+    showCICProcessing(item.fullName, item.cccd);
+    pollCICStatus(item, true);
+  }
+}
+
 function initCICEmployee(){
+  renderCICHistory();
+
   const saved = localStorage.getItem(CIC_REQUEST_KEY);
   if(!saved) return;
+
   try{
     const x = JSON.parse(saved);
     if(x && x.id){
-      showCICProcessing(x.fullName, x.cccd);
-      pollCICStatus(x);
+      if(x.status === 'completed') renderCICResult(x);
+      else{
+        showCICProcessing(x.fullName, x.cccd);
+        pollCICStatus(x);
+      }
     }
   }catch(e){}
 }
@@ -597,8 +737,15 @@ async function submitCICRequest(){
     const requestId = data.requestId || data.id;
     if(!requestId) throw new Error('Máy chủ không trả về mã yêu cầu.');
 
-    const saved = { id: requestId, fullName, cccd };
+    const saved = {
+      id: requestId,
+      fullName,
+      cccd,
+      status: 'processing',
+      createdAt: new Date().toISOString()
+    };
     localStorage.setItem(CIC_REQUEST_KEY, JSON.stringify(saved));
+    upsertCICHistory(saved);
 
     showCICProcessing(fullName, cccd);
     pollCICStatus(saved);
@@ -610,7 +757,7 @@ async function submitCICRequest(){
   }
 }
 
-function pollCICStatus(saved){
+function pollCICStatus(saved, oneShot=false){
   clearInterval(cicPollTimer);
 
   const once = async()=>{
@@ -619,18 +766,49 @@ function pollCICStatus(saved){
         method: 'GET'
       });
 
-      renderCICResult(data.request);
+      const r = data.request;
 
-      if(data.request && data.request.status === 'completed'){
-        clearInterval(cicPollTimer);
+      if(r){
+        upsertCICHistory({
+          id: r.id,
+          fullName: r.fullName,
+          cccd: r.cccd,
+          status: r.status,
+          debt: r.debt,
+          institutions: r.institutions,
+          cicStatus: r.cicStatus,
+          createdAt: r.createdAt,
+          completedAt: r.completedAt
+        });
+
+        // Nếu đang xem đúng hồ sơ này thì cập nhật khung Kết quả.
+        const current = localStorage.getItem(CIC_REQUEST_KEY);
+        let currentId = '';
+        try{ currentId = JSON.parse(current || '{}').id || ''; }catch(e){}
+        if(currentId === r.id){
+          localStorage.setItem(CIC_REQUEST_KEY, JSON.stringify({
+            id: r.id,
+            fullName: r.fullName,
+            cccd: r.cccd,
+            status: r.status,
+            debt: r.debt,
+            institutions: r.institutions,
+            cicStatus: r.cicStatus,
+            createdAt: r.createdAt,
+            completedAt: r.completedAt
+          }));
+          renderCICResult(r);
+        }
+
+        if(r.status === 'completed'){
+          clearInterval(cicPollTimer);
+        }
       }
-    }catch(e){
-      // Giữ polling; lỗi mạng tạm thời sẽ được thử lại sau 5 giây.
-    }
+    }catch(e){}
   };
 
   once();
-  cicPollTimer = setInterval(once, 5000);
+  if(!oneShot) cicPollTimer = setInterval(once,5000);
 }
 
 function renderCICResult(r){
