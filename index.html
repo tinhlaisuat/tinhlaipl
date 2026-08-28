@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -77,15 +78,6 @@ padding:7px 12px;color:#14577f;font-size:14px
 .zalo-float:hover::after{opacity:1;transform:translateY(0)}
 @media(max-width:650px){.zalo-float{right:14px;bottom:14px;width:54px;height:54px}.zalo-float::after{display:none}.donate-actions{flex-direction:column}.donate-action-btn{width:100%}}
 /* ===== CIC + ADMIN ===== */
-function sanitizeCICCCCD(el){
-  let s = String(el.value || '');
-  let digits = '';
-  for (const ch of s) {
-    if (ch >= '0' && ch <= '9') digits += ch;
-  }
-  el.value = digits.slice(0, 12);
-}
-
 .cic-card{max-width:900px;margin:0 auto}.cic-form{display:grid;grid-template-columns:1fr 1fr;gap:18px}.cic-actions{display:flex;justify-content:center;margin-top:18px}.cic-result{margin-top:22px;border:1px solid #d8e5f2;border-radius:13px;background:linear-gradient(180deg,#f7fbff,#eef7ff);padding:18px}.cic-result-title{font-weight:800;color:#123d70;margin-bottom:10px}.cic-status{padding:13px 14px;background:#fff;border:1px solid #dce5ee;border-radius:10px;color:#536a86;line-height:1.65}.cic-status.processing{color:#a75b00;background:#fff9ee;border-color:#f2ddb8}.cic-status.done{color:#08763e;background:#f1fff7;border-color:#bfe8cf}.cic-result-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.cic-result-item{background:#fff;border:1px solid #dce5ee;border-radius:10px;padding:12px}.cic-result-item small{display:block;color:#6b7f96;margin-bottom:4px}.cic-result-item strong{color:#173b68}.admin-login{max-width:520px;margin:0 auto}.admin-panel{display:none}.admin-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}.admin-list{display:grid;gap:14px}.admin-request{border:1px solid #d9e4ef;border-radius:13px;padding:16px;background:#fff}.admin-request-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:13px}.admin-customer{font-size:16px;font-weight:800;color:#123d70}.admin-meta{font-size:12px;color:#73859a;margin-top:3px}.admin-fields{display:grid;grid-template-columns:1fr 1fr;gap:13px}.admin-status-options{display:flex;gap:16px;flex-wrap:wrap;margin-top:13px;padding:12px;background:#f7faff;border-radius:10px}.admin-status-options label{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:#294866}.admin-status-options input{width:17px;height:17px;accent-color:#0868d9}.admin-submit{margin-top:13px;display:flex;justify-content:flex-end}.admin-empty{text-align:center;padding:35px 15px;color:#718399}.admin-badge{font-size:11px;font-weight:800;border-radius:18px;padding:6px 10px;background:#fff4df;color:#9b5d00;white-space:nowrap}.admin-badge.done{background:#eafaf1;color:#08763e}.admin-login-note{margin-top:10px;font-size:12px;color:#6c7f96;line-height:1.6}.nav{overflow-x:auto}.nav button{min-width:150px}
 @media(max-width:650px){.cic-form,.cic-result-grid,.admin-fields{grid-template-columns:1fr}.admin-request-top,.admin-toolbar{flex-direction:column}.admin-submit .btn{width:100%}.nav{justify-content:flex-start}}
 
@@ -118,24 +110,73 @@ function sanitizeCICCCCD(el){
 .admin-completed-item strong{color:#173b68}
 @media(max-width:650px){.admin-completed-grid{grid-template-columns:1fr}}
 
+/* ===== AUTH + EMPLOYEE MANAGEMENT ===== */
+.auth-gate{position:fixed;inset:0;z-index:2147483647;background:linear-gradient(145deg,#041638,#07316f);display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}
+.auth-card{width:100%;max-width:460px;background:#fff;border-radius:18px;padding:26px;box-shadow:0 20px 65px rgba(0,0,0,.34)}
+.auth-brand{text-align:center;margin-bottom:18px}.auth-brand-icon{width:64px;height:64px;border-radius:50%;margin:0 auto 11px;background:#eaf4ff;color:#0868d9;display:flex;align-items:center;justify-content:center;font-size:29px}.auth-brand h2{margin:0;color:#123766;font-size:24px}.auth-brand p{margin:7px 0 0;color:#687d98;font-size:13px;line-height:1.5}
+.auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:7px;background:#eff5fb;border-radius:10px;padding:5px;margin-bottom:17px}.auth-tab{height:42px;border:0;border-radius:8px;background:transparent;color:#58708b;font:700 14px "Be Vietnam Pro";cursor:pointer}.auth-tab.active{background:#fff;color:#0868d9;box-shadow:0 2px 8px rgba(20,65,110,.12)}
+.auth-view{display:none}.auth-view.active{display:block}.auth-field{margin-top:13px}.auth-field label{display:block;margin-bottom:7px;font-size:13px;font-weight:700;color:#294866}.auth-field input{height:48px}.auth-submit{width:100%;margin-top:17px}.auth-feedback{display:none;margin-top:12px;padding:11px 12px;border-radius:9px;font-size:13px;line-height:1.55}.auth-feedback.error{display:block;background:#fff1f1;color:#c62828;border:1px solid #f3c7c7}.auth-feedback.success{display:block;background:#effcf5;color:#08763e;border:1px solid #c6ead4}
+.account-area{display:none;align-items:center;gap:9px;color:#fff}.account-info{text-align:right;min-width:120px}.account-info strong{display:block;font-size:12px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.account-info small{font-size:10px;color:#bbd7fa}.account-logout{width:38px;height:38px;border:1px solid #ffffff52;border-radius:9px;background:#ffffff14;color:#fff;cursor:pointer}
+.employee-management{margin-bottom:24px;padding-bottom:20px;border-bottom:2px solid #e7eef6}.employee-list{display:grid;gap:10px;margin-top:12px}.employee-row{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;border:1px solid #dce5ee;border-radius:11px;padding:13px;background:#fff}.employee-name{font-weight:800;color:#123d70}.employee-meta{font-size:12px;color:#6b7f96;margin-top:4px;line-height:1.55}.employee-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:7px}.employee-actions .btn{height:36px;padding:0 12px;font-size:12px}.status-pill{display:inline-block;margin-top:6px;padding:4px 8px;border-radius:14px;font-size:10px;font-weight:800}.status-pending{background:#fff4df;color:#9b5d00}.status-active{background:#eafaf1;color:#08763e}.status-rejected,.status-locked{background:#fff0f0;color:#c62828}
+.admin-employee-line{margin-top:5px;font-size:12px;color:#075fc8;font-weight:700}
+@media(max-width:1100px){.account-info{display:none}.header{padding-left:2%;padding-right:2%;gap:12px}.nav button{min-width:130px;font-size:14px}}
+@media(max-width:650px){.auth-card{padding:20px 16px}.employee-row{grid-template-columns:1fr}.employee-actions{justify-content:flex-start}.account-area{width:100%;justify-content:center}.account-info{display:block;text-align:left}.header{gap:10px}}
+
 </style>
 </head>
 <body>
 
-<!-- PASSWORD LOCK: chỉ bổ sung chức năng khóa truy cập -->
-<div id="sitePasswordLock" style="position:fixed;inset:0;z-index:2147483647;background:#061b46;display:flex;align-items:center;justify-content:center;padding:20px;font-family:Arial,sans-serif;">
-  <div style="width:100%;max-width:400px;background:#fff;border-radius:16px;padding:30px;box-shadow:0 15px 50px rgba(0,0,0,.35);text-align:center;">
-    <div style="font-size:48px;margin-bottom:12px;">🔐</div>
-    <h2 style="margin:0 0 8px;color:#123766;">NHẬP MẬT KHẨU</h2>
-    <p style="margin:0 0 18px;color:#64748b;font-size:14px;">Vui lòng nhập mật khẩu để sử dụng website</p>
-    <input id="sitePasswordInput" type="password" placeholder="Nhập mật khẩu"
-      style="width:100%;height:50px;border:1px solid #ccd7e4;border-radius:9px;padding:0 14px;font-size:16px;outline:none;"
-      onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('siteUnlockButton').click();}">
-    <button id="siteUnlockButton" type="button"
-      style="width:100%;height:50px;margin-top:12px;border:0;border-radius:9px;background:#0868d9;color:#fff;font-weight:700;font-size:15px;cursor:pointer;">
-      MỞ KHÓA
-    </button>
-    <div id="sitePasswordError" style="display:none;margin-top:10px;color:#e33;font-size:13px;font-weight:700;">Mật khẩu không đúng!</div>
+<!-- Đăng nhập bắt buộc cho toàn bộ website -->
+<div id="authGate" class="auth-gate">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="auth-brand-icon"><i class="fa-solid fa-shield-halved"></i></div>
+      <h2>HỆ THỐNG NHÂN VIÊN</h2>
+      <p>Đăng nhập để sử dụng công cụ và tra cứu CIC.</p>
+    </div>
+
+    <div class="auth-tabs">
+      <button id="loginTab" class="auth-tab active" type="button" onclick="showAuthView('login')">Đăng nhập</button>
+      <button id="registerTab" class="auth-tab" type="button" onclick="showAuthView('register')">Đăng ký</button>
+    </div>
+
+    <form id="loginView" class="auth-view active" onsubmit="loginAccount(event)">
+      <div class="auth-field">
+        <label>Email nhân viên hoặc tài khoản Admin</label>
+        <input id="loginIdentifier" autocomplete="username" placeholder="Nhập email hoặc tài khoản Admin">
+      </div>
+      <div class="auth-field">
+        <label>Mật khẩu</label>
+        <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Nhập mật khẩu">
+      </div>
+      <button id="loginSubmit" class="btn blue auth-submit" type="submit"><i class="fa-solid fa-right-to-bracket"></i>Đăng nhập</button>
+      <div id="loginFeedback" class="auth-feedback"></div>
+    </form>
+
+    <form id="registerView" class="auth-view" onsubmit="registerAccount(event)">
+      <div class="auth-field">
+        <label>Họ tên nhân viên</label>
+        <input id="registerName" autocomplete="name" maxlength="100" placeholder="Nhập họ và tên">
+      </div>
+      <div class="auth-field">
+        <label>Email</label>
+        <input id="registerEmail" type="email" autocomplete="email" maxlength="150" placeholder="Nhập email">
+      </div>
+      <div class="auth-field">
+        <label>Mã nhân viên <span style="font-weight:500;color:#718399">(không bắt buộc)</span></label>
+        <input id="registerCode" maxlength="30" placeholder="Nhập mã nhân viên">
+      </div>
+      <div class="auth-field">
+        <label>Mật khẩu</label>
+        <input id="registerPassword" type="password" autocomplete="new-password" minlength="8" maxlength="128" placeholder="Tối thiểu 8 ký tự">
+      </div>
+      <div class="auth-field">
+        <label>Nhập lại mật khẩu</label>
+        <input id="registerConfirm" type="password" autocomplete="new-password" minlength="8" maxlength="128" placeholder="Nhập lại mật khẩu">
+      </div>
+      <button id="registerSubmit" class="btn green auth-submit" type="submit"><i class="fa-solid fa-user-plus"></i>Đăng ký tài khoản</button>
+      <div id="registerFeedback" class="auth-feedback"></div>
+    </form>
   </div>
 </div>
 
@@ -146,9 +187,13 @@ function sanitizeCICCCCD(el){
 <button onclick="page('topup',this)"><i class="fa-solid fa-chart-line"></i>Tính lãi TOPUP</button>
 <button onclick="page('idcard',this)"><i class="fa-solid fa-id-card"></i>Tính IDCARD</button>
 <button onclick="page('cic',this);initCICEmployee()"><i class="fa-solid fa-magnifying-glass"></i>Tra CIC</button>
-<button onclick="page('admin',this);initCICAdmin()"><i class="fa-solid fa-user-shield"></i>Admin</button>
+<button id="adminNavButton" style="display:none" onclick="page('admin',this);initCICAdmin()"><i class="fa-solid fa-user-shield"></i>Admin</button>
 <button onclick="page('donate',this)"><i class="fa-regular fa-hand-heart"></i>Donate</button>
 </nav>
+<div id="accountArea" class="account-area">
+  <div class="account-info"><strong id="currentUserName">-</strong><small id="currentUserRole">-</small></div>
+  <button class="account-logout" type="button" onclick="logoutAccount()" title="Đăng xuất"><i class="fa-solid fa-right-from-bracket"></i></button>
+</div>
 </header>
 
 
@@ -280,10 +325,10 @@ Từ <strong id="idcardMonthlyMin">0 VND</strong> đến <strong id="idcardMonth
 
     <div class="cic-history">
       <div class="cic-history-head">
-        <strong><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử tra CIC dùng chung <span style="font-size:11px;font-weight:600;color:#6b7f96">(bấm khách hàng để xem lại)</span></strong>
+        <strong><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử tra CIC của tôi <span style="font-size:11px;font-weight:600;color:#6b7f96">(bấm khách hàng để xem lại)</span></strong>
       </div>
       <div class="cic-history-search">
-        <input id="cicHistorySearch" type="search" placeholder="Tìm khách hàng trong lịch sử dùng chung..." oninput="renderCICHistory()">
+        <input id="cicHistorySearch" type="search" placeholder="Tìm khách hàng trong lịch sử của tôi..." oninput="renderCICHistory()">
         <span id="cicHistoryCount" class="cic-history-count"></span>
       </div>
       <div id="cicHistoryList" class="cic-history-list">
@@ -297,16 +342,22 @@ Từ <strong id="idcardMonthlyMin">0 VND</strong> đến <strong id="idcardMonth
   <div class="card">
     <div class="head">
       <div class="title"><i class="fa-solid fa-user-shield"></i>ADMIN CIC</div>
-      <div class="sub">Đăng nhập Admin để tiếp nhận và trả kết quả CIC</div>
+      <div class="sub">Phê duyệt nhân viên, tiếp nhận và trả kết quả CIC</div>
     </div>
-    <div id="adminLoginBox" class="admin-login">
-      <div class="field"><label><i class="fa-solid fa-user"></i>Tên đăng nhập Admin</label><input id="adminUsername" autocomplete="username" placeholder="Tên đăng nhập"></div>
-      <div class="field" style="margin-top:14px"><label><i class="fa-solid fa-lock"></i>Mật khẩu Admin</label><input id="adminPassword" type="password" autocomplete="current-password" placeholder="Mật khẩu" onkeydown="if(event.key==='Enter'){adminLogin()}"></div>
-      <button id="adminLoginBtn" class="btn blue" type="button" onclick="adminLogin()" style="width:100%;margin-top:16px"><i class="fa-solid fa-right-to-bracket"></i>Đăng nhập Admin</button>
-      <div id="adminLoginError" style="display:none;color:#d93025;font-size:13px;font-weight:700;margin-top:10px"></div>
-      <div class="admin-login-note">Tài khoản và mật khẩu Admin được xác thực ở máy chủ.</div>
-    </div>
-    <div id="adminPanel" class="admin-panel">
+    <div id="adminPanel" class="admin-panel" style="display:block">
+      <div class="employee-management">
+        <div class="admin-toolbar">
+          <div>
+            <strong>Quản lý tài khoản nhân viên <span id="adminUserCount" style="font-size:12px;color:#6b7f96"></span></strong>
+            <div style="font-size:12px;color:#718399;margin-top:3px">Tài khoản mới chỉ sử dụng được sau khi Admin phê duyệt.</div>
+          </div>
+          <button class="btn white" style="height:40px" onclick="loadAdminUsers()"><i class="fa-solid fa-rotate"></i>Làm mới</button>
+        </div>
+        <div id="adminUserList" class="employee-list">
+          <div class="admin-empty">Chưa tải danh sách nhân viên.</div>
+        </div>
+      </div>
+
       <div class="admin-toolbar">
         <div>
           <strong>Chưa trả kết quả <span id="adminPendingCount" style="font-size:12px;color:#6b7f96"></span></strong>
@@ -314,7 +365,7 @@ Từ <strong id="idcardMonthlyMin">0 VND</strong> đến <strong id="idcardMonth
         </div>
         <div style="display:flex;gap:8px">
           <button class="btn white" style="height:40px" onclick="loadAdminRequests()"><i class="fa-solid fa-rotate"></i>Làm mới</button>
-          <button class="btn red" style="height:40px" onclick="adminLogout()"><i class="fa-solid fa-right-from-bracket"></i>Đăng xuất</button>
+          <button class="btn red" style="height:40px" onclick="logoutAccount()"><i class="fa-solid fa-right-from-bracket"></i>Đăng xuất</button>
         </div>
       </div>
 
@@ -386,18 +437,20 @@ Từ <strong id="idcardMonthlyMin">0 VND</strong> đến <strong id="idcardMonth
 
 
 <script>
-const API_BASE='https://tinh-lai-api.thien-miraeasset.workers.dev';
-const TOKEN_KEY='tlsAuthToken';
+const CIC_API_BASE='https://cic-api.thien-miraeasset.workers.dev';
+const CALC_API_BASE='https://tinh-lai-api.thien-miraeasset.workers.dev';
+const CIC_AUTH_TOKEN_KEY='tlsCicAuthToken';
+let CURRENT_USER=null;
 const $=id=>document.getElementById(id);
 const fmt=n=>Math.round(Number(n)||0).toLocaleString('vi-VN');
 const num=s=>Number(String(s??'').replace(/\./g,'').replace(/,/g,'.'))||0;
 const percentNum=s=>Number(String(s??'').trim().replace(',','.'))||0;
 function moneyInput(el){let v=String(el.value).replace(/\D/g,'');el.value=v?Number(v).toLocaleString('vi-VN'):''}
-function page(id,btn){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));btn.classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}
+function sanitizeCICCCCD(el){el.value=String(el.value||'').replace(/\D/g,'').slice(0,12)}
+function page(id,btn){if(id==='admin'&&CURRENT_USER?.role!=='admin'){alert('Bạn không có quyền truy cập trang Admin.');return}document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));btn.classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}
 function iso(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function dueDateFromApi(v){let [y,m,d]=String(v).split('-').map(Number);return new Date(y,m-1,d)}
-function showPasswordLock(message=''){localStorage.removeItem(TOKEN_KEY);let lock=$('sitePasswordLock');lock.style.display='flex';lock.style.pointerEvents='auto';$('sitePasswordError').textContent=message||'Phiên đăng nhập đã hết hạn. Vui lòng nhập lại mật khẩu!';$('sitePasswordError').style.display=message?'block':'none';setTimeout(()=>$('sitePasswordInput').focus(),50)}
-async function apiPost(path,body){const token=localStorage.getItem(TOKEN_KEY)||'';const res=await fetch(API_BASE+path,{method:'POST',headers:{'Content-Type':'application/json',...(token?{'Authorization':'Bearer '+token}:{})},body:JSON.stringify(body)});let data={};try{data=await res.json()}catch(e){}if(res.status===401&&path!='/login'){showPasswordLock('Phiên đăng nhập đã hết hạn. Vui lòng nhập lại mật khẩu!');throw new Error('UNAUTHORIZED')}if(!res.ok)throw new Error(data.error||'Không thể kết nối máy chủ.');return data}
+async function apiPost(path,body){return calcFetch(path,{method:'POST',body:JSON.stringify(body)})}
 async function calcPL(){const loan=num($('plLoan').value),insPct=percentNum($('plIns').value),rate=percentNum($('plRate').value),tenure=parseInt($('plTenure').value||0);if(!loan||!tenure||rate<=0){alert('Vui lòng nhập đủ Số tiền vay, Lãi suất và Số kỳ vay.');return false}if(!$('plDisb').value||!$('plFirst').value){alert('Vui lòng nhập Ngày Giải Ngân và Ngày Ký Đóng Đầu Tiên.');return false}try{const response=await apiPost('/pl',{loan,insPct,rate,tenure,disb:$('plDisb').value,first:$('plFirst').value});const result=response.result;const rows=(result.rows||[]).map(r=>({...r,due:dueDateFromApi(r.due)}));$('plPillTotal').textContent=fmt(result.principal)+' VND';$('plPillPeriods').textContent=tenure;$('plPillPayment').textContent=fmt(result.customerEmi)+' VND';renderPL(rows);if($('plSave').checked)localStorage.setItem('plData',JSON.stringify({disb:$('plDisb').value,first:$('plFirst').value,loan:$('plLoan').value,ins:$('plIns').value,rate:$('plRate').value,tenure:$('plTenure').value}));window.PL_ROWS=rows;window.PL_META={principal:result.principal,loan:result.loan,insurance:result.insurance,emi:result.emi};return true}catch(e){if(e.message!=='UNAUTHORIZED')alert('Không tính được PL: '+e.message);return false}}
 function renderPL(rows){let h='<thead><tr><th>Kỳ</th><th>Ngày đến hạn</th><th>EMI khoản vay</th><th>Tổng đóng</th><th>Dư nợ cuối kỳ</th></tr></thead><tbody>';rows.forEach(r=>h+=`<tr><td>${r.i}</td><td>${r.due.toLocaleDateString('vi-VN')}</td><td>${fmt(r.payment)}</td><td>${fmt(r.customerPayment)}</td><td>${fmt(r.closing)}</td></tr>`);h+='</tbody>';$('plSchedule').innerHTML=h;$('plScheduleWrap').style.display='block'}
 async function excelPL(){if(!window.PL_ROWS){const ok=await calcPL();if(!ok||!window.PL_ROWS)return}const data=window.PL_ROWS.map(r=>({'Kỳ':r.i,'Ngày đến hạn':r.due.toLocaleDateString('vi-VN'),'Số ngày':r.days,'Dư nợ gốc':r.balance,'Gốc':r.principal,'Lãi':r.interest,'EMI':r.payment,'Dư nợ cuối kỳ':r.closing}));const ws=XLSX.utils.json_to_sheet(data),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Lịch trả nợ');XLSX.writeFile(wb,'Tinh_Lai_PL.xlsx')}
@@ -512,23 +565,136 @@ function copyDonateContent(){
 
 
 /* ===== CIC + ADMIN ===== */
-const CIC_API_BASE = 'https://cic-api.thien-miraeasset.workers.dev';
-const CIC_ADMIN_TOKEN_KEY = 'tlsCicAdminToken';
-const CIC_REQUEST_KEY = 'tlsCicLastRequest';
+const CIC_REQUEST_KEY_PREFIX = 'tlsCicLastRequest:';
 let cicPollTimer = null;
 
+function cicRequestKey(){return CIC_REQUEST_KEY_PREFIX+(CURRENT_USER?.id||'anonymous')}
+
 async function cicFetch(path, options={}){
+  const token=sessionStorage.getItem(CIC_AUTH_TOKEN_KEY)||'';
   const res = await fetch(CIC_API_BASE + path, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
+      ...(token?{Authorization:'Bearer '+token}:{}),
       ...(options.headers || {})
     }
   });
   let data = {};
   try { data = await res.json(); } catch(e) {}
+  if(res.status===401&&!path.startsWith('/auth/')){
+    clearAuthSession();
+    showAuthGate('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+  }
   if(!res.ok) throw new Error(data.error || 'Không thể kết nối máy chủ CIC.');
   return data;
+}
+
+async function calcFetch(path,options={}){
+  const token=sessionStorage.getItem(CIC_AUTH_TOKEN_KEY)||'';
+  const res=await fetch(CALC_API_BASE+path,{
+    ...options,
+    headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{}),...(options.headers||{})}
+  });
+  let data={};
+  try{data=await res.json()}catch(e){}
+  if(res.status===401){clearAuthSession();showAuthGate('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');throw new Error('UNAUTHORIZED')}
+  if(!res.ok)throw new Error(data.error||'Không thể kết nối máy chủ tính lãi.');
+  return data;
+}
+
+function setAuthFeedback(id,message,type='error'){
+  const box=$(id);if(!box)return;
+  box.textContent=message||'';
+  box.className='auth-feedback '+(message?type:'');
+  if(!message)box.style.display='none';else box.style.display='block';
+}
+
+function showAuthView(view){
+  const login=view==='login';
+  $('loginTab').classList.toggle('active',login);
+  $('registerTab').classList.toggle('active',!login);
+  $('loginView').classList.toggle('active',login);
+  $('registerView').classList.toggle('active',!login);
+  setAuthFeedback('loginFeedback','');
+  setAuthFeedback('registerFeedback','');
+  setTimeout(()=>$(login?'loginIdentifier':'registerName').focus(),50);
+}
+
+function showAuthGate(message=''){
+  $('authGate').style.display='flex';
+  showAuthView('login');
+  if(message)setAuthFeedback('loginFeedback',message,'error');
+}
+
+function clearAuthSession(){
+  sessionStorage.removeItem(CIC_AUTH_TOKEN_KEY);
+  CURRENT_USER=null;
+  clearInterval(cicPollTimer);
+}
+
+function applyLoggedInUser(user){
+  CURRENT_USER=user;
+  $('authGate').style.display='none';
+  $('accountArea').style.display='flex';
+  $('currentUserName').textContent=user.fullName||user.email||'-';
+  $('currentUserRole').textContent=user.role==='admin'?'Quản trị viên':'Nhân viên';
+  $('adminNavButton').style.display=user.role==='admin'?'block':'none';
+  if(user.role==='employee')initCICEmployee();
+  else initCICAdmin();
+}
+
+async function loginAccount(event){
+  event.preventDefault();
+  const identifier=$('loginIdentifier').value.trim();
+  const password=$('loginPassword').value;
+  if(!identifier||!password){setAuthFeedback('loginFeedback','Vui lòng nhập tài khoản và mật khẩu.');return}
+  const btn=$('loginSubmit');btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i>Đang đăng nhập...';
+  setAuthFeedback('loginFeedback','');
+  try{
+    const data=await cicFetch('/auth/login',{method:'POST',body:JSON.stringify({identifier,password})});
+    sessionStorage.setItem(CIC_AUTH_TOKEN_KEY,data.token);
+    $('loginPassword').value='';
+    applyLoggedInUser(data.user);
+  }catch(e){setAuthFeedback('loginFeedback',e.message,'error')}
+  finally{btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-right-to-bracket"></i>Đăng nhập'}
+}
+
+async function registerAccount(event){
+  event.preventDefault();
+  const fullName=$('registerName').value.trim();
+  const email=$('registerEmail').value.trim();
+  const employeeCode=$('registerCode').value.trim();
+  const password=$('registerPassword').value;
+  const confirm=$('registerConfirm').value;
+  if(!fullName||!email||!password){setAuthFeedback('registerFeedback','Vui lòng nhập đủ họ tên, email và mật khẩu.');return}
+  if(password.length<8){setAuthFeedback('registerFeedback','Mật khẩu phải có ít nhất 8 ký tự.');return}
+  if(password!==confirm){setAuthFeedback('registerFeedback','Hai mật khẩu chưa trùng nhau.');return}
+  const btn=$('registerSubmit');btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i>Đang đăng ký...';
+  setAuthFeedback('registerFeedback','');
+  try{
+    const data=await cicFetch('/auth/register',{method:'POST',body:JSON.stringify({fullName,email,employeeCode,password})});
+    $('registerView').reset();
+    setAuthFeedback('registerFeedback',data.message||'Đăng ký thành công. Vui lòng chờ Admin phê duyệt.','success');
+  }catch(e){setAuthFeedback('registerFeedback',e.message,'error')}
+  finally{btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-user-plus"></i>Đăng ký tài khoản'}
+}
+
+async function logoutAccount(){
+  try{await cicFetch('/auth/logout',{method:'POST',body:'{}'})}catch(e){}
+  clearAuthSession();
+  $('accountArea').style.display='none';
+  $('adminNavButton').style.display='none';
+  showAuthGate();
+}
+
+async function initAuth(){
+  const token=sessionStorage.getItem(CIC_AUTH_TOKEN_KEY);
+  if(!token){showAuthGate();return}
+  try{
+    const data=await cicFetch('/auth/me',{method:'GET'});
+    applyLoggedInUser(data.user);
+  }catch(e){clearAuthSession();showAuthGate('Vui lòng đăng nhập để tiếp tục.')}
 }
 
 function cicFormatDebt(v){
@@ -552,7 +718,7 @@ let CIC_SHARED_HISTORY = [];
 async function loadCICHistory(){
   const box = $('cicHistoryList');
   if(box){
-    box.innerHTML = '<div class="cic-history-empty"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải lịch sử dùng chung...</div>';
+    box.innerHTML = '<div class="cic-history-empty"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải lịch sử của bạn...</div>';
   }
 
   try{
@@ -592,7 +758,7 @@ function renderCICHistory(){
   if(countEl){
     countEl.textContent = q
       ? `Tìm thấy ${filtered.length}/${arr.length} lượt`
-      : `${arr.length}/500 lượt dùng chung`;
+      : `${arr.length}/500 lượt của bạn`;
   }
 
   if(!arr.length){
@@ -658,7 +824,7 @@ async function openCICHistory(id){
 function initCICEmployee(){
   loadCICHistory();
 
-  const saved = localStorage.getItem(CIC_REQUEST_KEY);
+  const saved = localStorage.getItem(cicRequestKey());
   if(!saved) return;
 
   try{
@@ -729,7 +895,7 @@ async function submitCICRequest(){
       status: 'processing',
       createdAt: new Date().toISOString()
     };
-    localStorage.setItem(CIC_REQUEST_KEY, JSON.stringify(saved));
+    localStorage.setItem(cicRequestKey(), JSON.stringify(saved));
 
     showCICProcessing(fullName, cccd);
 
@@ -761,11 +927,11 @@ function pollCICStatus(saved, oneShot=false){
       if(r){
 
         // Nếu đang xem đúng hồ sơ này thì cập nhật khung Kết quả.
-        const current = localStorage.getItem(CIC_REQUEST_KEY);
+        const current = localStorage.getItem(cicRequestKey());
         let currentId = '';
         try{ currentId = JSON.parse(current || '{}').id || ''; }catch(e){}
         if(currentId === r.id){
-          localStorage.setItem(CIC_REQUEST_KEY, JSON.stringify({
+          localStorage.setItem(cicRequestKey(), JSON.stringify({
             id: r.id,
             fullName: r.fullName,
             cccd: r.cccd,
@@ -812,96 +978,61 @@ function renderCICResult(r){
   $('cicResultRisk').textContent = r.cicStatus || '-';
 }
 
-/* Admin dùng Basic Auth theo đúng Worker hiện tại.
-   Chuỗi Base64 chỉ được lưu trên trình duyệt của Admin sau khi đăng nhập. */
-function getAdminAuthHeader(){
-  const token = localStorage.getItem(CIC_ADMIN_TOKEN_KEY);
-  return token ? 'Basic ' + token : '';
-}
-
-async function adminLogin(){
-  const username = $('adminUsername').value.trim();
-  const password = $('adminPassword').value;
-  const err = $('adminLoginError');
-  err.style.display = 'none';
-
-  if(!username || !password){
-    err.textContent = 'Vui lòng nhập tên đăng nhập và mật khẩu.';
-    err.style.display = 'block';
-    return;
-  }
-
-  const btn = $('adminLoginBtn');
-  btn.disabled = true;
-  btn.textContent = 'ĐANG ĐĂNG NHẬP...';
-
-  try{
-    const basicToken = btoa(unescape(encodeURIComponent(username + ':' + password)));
-
-    // Xác thực trực tiếp bằng endpoint danh sách Admin.
-    const data = await cicFetch('/admin/requests', {
-      method: 'GET',
-      headers: { Authorization: 'Basic ' + basicToken }
-    });
-
-    localStorage.setItem(CIC_ADMIN_TOKEN_KEY, basicToken);
-    $('adminPassword').value = '';
-    showAdminPanel();
-    renderAdminRequests(data.requests || []);
-  }catch(e){
-    localStorage.removeItem(CIC_ADMIN_TOKEN_KEY);
-    err.textContent = e.message;
-    err.style.display = 'block';
-  }finally{
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i>Đăng nhập Admin';
-  }
-}
-
 function initCICAdmin(){
-  if(localStorage.getItem(CIC_ADMIN_TOKEN_KEY)){
-    showAdminPanel();
-    loadAdminRequests();
-  }else{
-    showAdminLogin();
-  }
+  if(CURRENT_USER?.role!=='admin')return;
+  $('adminPanel').style.display='block';
+  loadAdminUsers();
+  loadAdminRequests();
 }
 
-function showAdminPanel(){
-  $('adminLoginBox').style.display = 'none';
-  $('adminPanel').style.display = 'block';
+async function loadAdminUsers(){
+  const box=$('adminUserList');
+  box.innerHTML='<div class="admin-empty"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải tài khoản...</div>';
+  try{
+    const data=await cicFetch('/admin/users',{method:'GET'});
+    renderAdminUsers(data.users||[]);
+  }catch(e){box.innerHTML='<div class="admin-empty">'+escapeHtml(e.message)+'</div>'}
 }
 
-function showAdminLogin(){
-  $('adminLoginBox').style.display = 'block';
-  $('adminPanel').style.display = 'none';
+function renderAdminUsers(users){
+  const box=$('adminUserList');
+  $('adminUserCount').textContent=`(${users.length})`;
+  if(!users.length){box.innerHTML='<div class="admin-empty">Chưa có tài khoản nhân viên.</div>';return}
+  const labels={pending:'Chờ duyệt',active:'Đang hoạt động',rejected:'Đã từ chối',locked:'Đã khóa'};
+  box.innerHTML=users.map(u=>{
+    const id=escapeHtml(u.id),status=String(u.status||'pending');
+    let actions='';
+    if(status==='pending')actions=`<button class="btn green" onclick="updateUserStatus('${id}','approve')">Duyệt</button><button class="btn red" onclick="updateUserStatus('${id}','reject')">Từ chối</button>`;
+    else if(status==='active')actions=`<button class="btn red" onclick="updateUserStatus('${id}','lock')">Khóa</button>`;
+    else actions=`<button class="btn green" onclick="updateUserStatus('${id}','unlock')">Mở khóa/Duyệt</button>`;
+    const created=u.created_at?new Date(u.created_at).toLocaleString('vi-VN'):'-';
+    const last=u.last_login_at?new Date(u.last_login_at).toLocaleString('vi-VN'):'Chưa đăng nhập';
+    return `<div class="employee-row">
+      <div><div class="employee-name">${escapeHtml(u.full_name||'-')}</div>
+      <div class="employee-meta">${escapeHtml(u.email||'-')}${u.employee_code?' • Mã NV: '+escapeHtml(u.employee_code):''}<br>Đăng ký: ${escapeHtml(created)} • Đăng nhập gần nhất: ${escapeHtml(last)}</div>
+      <span class="status-pill status-${escapeHtml(status)}">${escapeHtml(labels[status]||status)}</span></div>
+      <div class="employee-actions">${actions}</div>
+    </div>`;
+  }).join('');
 }
 
-function adminLogout(){
-  localStorage.removeItem(CIC_ADMIN_TOKEN_KEY);
-  showAdminLogin();
+async function updateUserStatus(id,action){
+  if((action==='reject'||action==='lock')&&!confirm(action==='reject'?'Từ chối tài khoản này?':'Khóa tài khoản này?'))return;
+  try{
+    await cicFetch('/admin/users/action',{method:'POST',body:JSON.stringify({id,action})});
+    await loadAdminUsers();
+  }catch(e){alert('Không cập nhật được tài khoản: '+e.message)}
 }
 
 async function loadAdminRequests(){
-  const auth = getAdminAuthHeader();
-  if(!auth){
-    showAdminLogin();
-    return;
-  }
 
   const list = $('adminRequestList');
   list.innerHTML = '<div class="admin-empty"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải yêu cầu...</div>';
 
   try{
-    const data = await cicFetch('/admin/requests', {
-      method: 'GET',
-      headers: { Authorization: auth }
-    });
+    const data = await cicFetch('/admin/requests', {method:'GET'});
     renderAdminRequests(data.requests || []);
   }catch(e){
-    if(/tài khoản|mật khẩu|Unauthorized|401/i.test(e.message)){
-      adminLogout();
-    }
     list.innerHTML = '<div class="admin-empty">' + escapeHtml(e.message) + '</div>';
   }
 }
@@ -938,6 +1069,7 @@ function renderAdminRequests(rows){
           <div>
             <div class="admin-customer">${escapeHtml(r.fullName)}</div>
             <div class="admin-meta">CCCD: ${escapeHtml(r.cccd)} • ${r.createdAt ? new Date(r.createdAt).toLocaleString('vi-VN') : ''}</div>
+            <div class="admin-employee-line"><i class="fa-solid fa-user-tie"></i> Nhân viên: ${escapeHtml(r.employeeName||'Không xác định')}${r.employeeEmail?' • '+escapeHtml(r.employeeEmail):''}</div>
           </div>
           <span class="admin-badge">Đang xử lý</span>
         </div>
@@ -986,6 +1118,7 @@ function renderAdminRequests(rows){
           <div>
             <div class="admin-customer">${escapeHtml(r.fullName)}</div>
             <div class="admin-meta">CCCD: ${escapeHtml(r.cccd)} • ${r.completedAt ? 'Trả lúc ' + new Date(r.completedAt).toLocaleString('vi-VN') : ''}</div>
+            <div class="admin-employee-line"><i class="fa-solid fa-user-tie"></i> Nhân viên: ${escapeHtml(r.employeeName||'Không xác định')}${r.employeeEmail?' • '+escapeHtml(r.employeeEmail):''}</div>
           </div>
           <span class="admin-badge done">Đã trả kết quả</span>
         </div>
@@ -1010,12 +1143,6 @@ function renderAdminRequests(rows){
 }
 
 async function sendCICResult(id){
-  const auth = getAdminAuthHeader();
-  if(!auth){
-    adminLogout();
-    return;
-  }
-
   const risk = document.querySelector(`input[name="risk_${CSS.escape(id)}"]:checked`);
   const debtDigits = String($('debt_'+id).value || '').replace(/\D/g,'');
   const debt = debtDigits || '0';
@@ -1034,7 +1161,6 @@ async function sendCICResult(id){
   try{
     await cicFetch('/admin/result', {
       method: 'POST',
-      headers: { Authorization: auth },
       body: JSON.stringify({
         id,
         debt,
@@ -1050,19 +1176,7 @@ async function sendCICResult(id){
   }
 }
 
-window.addEventListener('DOMContentLoaded',()=>{setDefaultDates();const s=localStorage.getItem('plData');if(s)try{let x=JSON.parse(s);$('plDisb').value=x.disb||$('plDisb').value;$('plFirst').value=x.first||$('plFirst').value;$('plLoan').value=x.loan||'';$('plIns').value=x.ins||'7,7';$('plRate').value=x.rate||'52';$('plTenure').value=x.tenure||24}catch(e){}});
+window.addEventListener('DOMContentLoaded',()=>{setDefaultDates();const s=localStorage.getItem('plData');if(s)try{let x=JSON.parse(s);$('plDisb').value=x.disb||$('plDisb').value;$('plFirst').value=x.first||$('plFirst').value;$('plLoan').value=x.loan||'';$('plIns').value=x.ins||'7,7';$('plRate').value=x.rate||'52';$('plTenure').value=x.tenure||24}catch(e){}initAuth()});
 </script>
-
-<script>
-(function(){var lock=document.getElementById('sitePasswordLock'),input=document.getElementById('sitePasswordInput'),button=document.getElementById('siteUnlockButton'),error=document.getElementById('sitePasswordError');if(localStorage.getItem(TOKEN_KEY)){lock.style.display='none';lock.style.pointerEvents='none'}async function unlock(){var password=input.value;if(!password)return;button.disabled=true;button.textContent='ĐANG KIỂM TRA...';error.style.display='none';try{const res=await fetch(API_BASE+'/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password})});let data={};try{data=await res.json()}catch(e){}if(res.ok&&data.ok&&data.token){localStorage.setItem(TOKEN_KEY,data.token);lock.style.display='none';lock.style.pointerEvents='none';input.value=''}else{error.textContent='Mật khẩu không đúng!';error.style.display='block';input.value='';input.focus()}}catch(e){error.textContent='Không kết nối được máy chủ. Vui lòng thử lại!';error.style.display='block'}finally{button.disabled=false;button.textContent='MỞ KHÓA'}}button.addEventListener('click',unlock);if(!localStorage.getItem(TOKEN_KEY))input.focus()})();
-</script>
-
-
-
-<script>
-
-</script>
-
-<script>window.addEventListener('DOMContentLoaded',()=>{initCICEmployee();});</script>
 </body>
 </html>
