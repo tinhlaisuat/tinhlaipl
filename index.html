@@ -1,15 +1,16 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="cic-build" content="2026-09-02-PERSISTENT-BROWSER-LOGIN">
+<meta name="cic-build" content="2026-09-11-ZALO-MULTI-AUTH">
 <title>TÍNH LÃI SUẤT - PL & TOPUP</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -157,8 +158,8 @@ padding:7px 12px;color:#14577f;font-size:14px
 
     <form id="loginView" class="auth-view active" onsubmit="loginAccount(event)">
       <div class="auth-field">
-        <label>Email nhân viên hoặc tài khoản Admin</label>
-        <input id="loginIdentifier" autocomplete="username" placeholder="Nhập email hoặc tài khoản Admin">
+        <label>Gmail nhân viên hoặc tài khoản Admin</label>
+        <input id="loginIdentifier" autocomplete="username" placeholder="Nhập Gmail hoặc tài khoản Admin">
       </div>
       <div class="auth-field">
         <label>Mật khẩu</label>
@@ -174,12 +175,8 @@ padding:7px 12px;color:#14577f;font-size:14px
         <input id="registerName" autocomplete="name" maxlength="100" placeholder="Nhập họ và tên">
       </div>
       <div class="auth-field">
-        <label>Email</label>
-        <input id="registerEmail" type="email" autocomplete="email" maxlength="150" placeholder="Nhập email">
-      </div>
-      <div class="auth-field">
-        <label>Mã nhân viên <span style="font-weight:500;color:#718399">(không bắt buộc)</span></label>
-        <input id="registerCode" maxlength="30" placeholder="Nhập mã nhân viên">
+        <label>Gmail</label>
+        <input id="registerEmail" type="email" autocomplete="email" maxlength="150" placeholder="Nhập Gmail">
       </div>
       <div class="auth-field">
         <label>Mật khẩu</label>
@@ -705,7 +702,6 @@ async function registerAccount(event){
   event.preventDefault();
   const fullName=$('registerName').value.trim();
   const email=$('registerEmail').value.trim();
-  const employeeCode=$('registerCode').value.trim();
   const password=$('registerPassword').value;
   const confirm=$('registerConfirm').value;
   if(!fullName||!email||!password){setAuthFeedback('registerFeedback','Vui lòng nhập đủ họ tên, email và mật khẩu.');return}
@@ -714,7 +710,7 @@ async function registerAccount(event){
   const btn=$('registerSubmit');btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i>Đang đăng ký...';
   setAuthFeedback('registerFeedback','');
   try{
-    const data=await cicFetch('/auth/register',{method:'POST',body:JSON.stringify({fullName,email,employeeCode,password})});
+    const data=await cicFetch('/auth/register',{method:'POST',body:JSON.stringify({fullName,email,password})});
     $('registerView').reset();
     setAuthFeedback('registerFeedback',data.message||'Đăng ký thành công. Vui lòng chờ Admin phê duyệt.','success');
   }catch(e){setAuthFeedback('registerFeedback',e.message,'error')}
@@ -1080,7 +1076,7 @@ function renderAdminUsers(users){
     const status=String(u.status||'pending');
     if(ADMIN_USER_FILTER!=='all'&&status!==ADMIN_USER_FILTER)return false;
     if(!q)return true;
-    return [u.full_name,u.email,u.employee_code].some(v=>String(v||'').toLowerCase().includes(q));
+    return [u.full_name,u.email].some(v=>String(v||'').toLowerCase().includes(q));
   });
   $('adminUserSummary').textContent=`Đang hiển thị ${filtered.length}/${all.length} tài khoản`;
 
@@ -1098,7 +1094,7 @@ function renderAdminUsers(users){
     const last=u.last_login_at?new Date(u.last_login_at).toLocaleString('vi-VN'):'Chưa đăng nhập';
     return `<div class="employee-row">
       <div><div class="employee-name">${escapeHtml(u.full_name||'-')}</div>
-      <div class="employee-meta">${escapeHtml(u.email||'-')}${u.employee_code?' • Mã NV: '+escapeHtml(u.employee_code):''}<br>Đăng ký: ${escapeHtml(created)} • Đăng nhập gần nhất: ${escapeHtml(last)}</div>
+      <div class="employee-meta">${escapeHtml(u.email||'-')}<br>Đăng ký: ${escapeHtml(created)} • Đăng nhập gần nhất: ${escapeHtml(last)}</div>
       <span class="status-pill status-${escapeHtml(status)}">${escapeHtml(labels[status]||status)}</span></div>
       <div class="employee-actions">${actions}</div>
     </div>`;
