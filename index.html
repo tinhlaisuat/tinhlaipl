@@ -138,6 +138,8 @@ padding:7px 12px;color:#14577f;font-size:14px
 .employee-summary{font-size:12px;color:#6b7f96;margin-top:5px}
 @media(max-width:650px){.admin-subnav{display:grid;grid-template-columns:1fr 1fr}.admin-subnav-btn{justify-content:center;padding:0 8px}.employee-filterbar{display:grid;grid-template-columns:1fr 1fr}.employee-filter-btn{width:100%}}
 
+
+.login-alert-list{display:flex;flex-direction:column;gap:10px}.login-alert-row{border:1px solid #f0d7d7;background:#fffafa;border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.login-alert-row.unread{border-color:#ef9a9a;background:#fff2f2;box-shadow:0 2px 10px #d9302510}.login-alert-title{font-weight:800;color:#b42318;margin-bottom:6px}.login-alert-meta{font-size:12px;color:#61728a;line-height:1.7}.login-alert-devices{font-size:13px;color:#243957;margin-top:6px;line-height:1.7}.login-alert-actions{display:flex;gap:8px;align-items:center;white-space:nowrap}.login-alert-badge{display:inline-flex;min-width:20px;height:20px;padding:0 6px;border-radius:10px;align-items:center;justify-content:center;background:#e53935;color:#fff;font-size:11px;font-weight:800;margin-left:5px}.login-alert-ok{color:#0a8f49;font-weight:700}.login-alert-warn{color:#d93025;font-weight:800}
 </style>
 </head>
 <body>
@@ -360,6 +362,7 @@ Từ <strong id="idcardMonthlyMin">0 VND</strong> đến <strong id="idcardMonth
       <div class="admin-subnav">
         <button id="adminTabCic" class="admin-subnav-btn active" type="button" onclick="showAdminView('cic')"><i class="fa-solid fa-magnifying-glass"></i>Xử lý CIC</button>
         <button id="adminTabEmployees" class="admin-subnav-btn" type="button" onclick="showAdminView('employees')"><i class="fa-solid fa-users-gear"></i>Quản lý nhân viên <span id="adminUserMenuCount"></span></button>
+        <button id="adminTabLoginAlerts" class="admin-subnav-btn" type="button" onclick="showAdminView('alerts')"><i class="fa-solid fa-triangle-exclamation"></i>Cảnh báo đăng nhập <span id="adminLoginAlertCount"></span></button>
       </div>
 
       <div id="adminCicView" class="admin-view active">
@@ -412,6 +415,24 @@ Từ <strong id="idcardMonthlyMin">0 VND</strong> đến <strong id="idcardMonth
 
           <div id="adminUserList" class="employee-list">
             <div class="admin-empty">Bấm Quản lý nhân viên để tải danh sách.</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="adminLoginAlertsView" class="admin-view">
+        <div class="employee-management">
+          <div class="admin-toolbar">
+            <div>
+              <strong>Cảnh báo đăng nhập trùng <span id="adminLoginAlertTitleCount" style="font-size:12px;color:#6b7f96"></span></strong>
+              <div style="font-size:12px;color:#718399;margin-top:3px">Một tài khoản nhân viên chỉ được phép có một phiên hoạt động. Lần đăng nhập từ thiết bị khác sẽ bị chặn và ghi tại đây.</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn white" style="height:40px" onclick="loadAdminLoginAlerts()"><i class="fa-solid fa-rotate"></i>Làm mới</button>
+              <button class="btn blue" style="height:40px" onclick="markAllLoginAlertsSeen()"><i class="fa-solid fa-check-double"></i>Đánh dấu đã xem</button>
+            </div>
+          </div>
+          <div id="adminLoginAlertList" class="login-alert-list">
+            <div class="admin-empty">Chưa tải cảnh báo đăng nhập.</div>
           </div>
         </div>
       </div>
@@ -661,6 +682,51 @@ function showAuthGate(message=''){
   if(message)setAuthFeedback('loginFeedback',message,'error');
 }
 
+const CIC_DEVICE_ID_KEY='tlsDeviceIdV1';
+let AUTH_HEARTBEAT_TIMER=null;
+let ADMIN_LOGIN_ALERT_TIMER=null;
+
+function getBrowserDeviceId(){
+  let id=localStorage.getItem(CIC_DEVICE_ID_KEY)||'';
+  if(!id){
+    try{id=crypto.randomUUID()}catch(e){id='web-'+Date.now()+'-'+Math.random().toString(36).slice(2)}
+    localStorage.setItem(CIC_DEVICE_ID_KEY,id);
+  }
+  return id;
+}
+
+function getBrowserDeviceName(){
+  const platform=navigator.userAgentData?.platform||navigator.platform||'Web Browser';
+  return 'Trình duyệt '+platform;
+}
+
+function stopAuthHeartbeat(){
+  if(AUTH_HEARTBEAT_TIMER){clearInterval(AUTH_HEARTBEAT_TIMER);AUTH_HEARTBEAT_TIMER=null}
+}
+
+async function sendAuthHeartbeat(){
+  if(!CURRENT_USER||CURRENT_USER.role!=='employee')return;
+  try{
+    await cicFetch('/auth/heartbeat',{method:'POST',body:JSON.stringify({
+      deviceId:getBrowserDeviceId(),deviceName:getBrowserDeviceName(),clientType:'web'
+    })});
+  }catch(e){
+    if(/phiên|session|hết hạn|không còn hiệu lực/i.test(String(e.message||''))){
+      clearAuthSession();
+      $('accountArea').style.display='none';
+      $('adminNavButton').style.display='none';
+      showAuthGate('Phiên đăng nhập không còn hiệu lực. Vui lòng đăng nhập lại.');
+    }
+  }
+}
+
+function startAuthHeartbeat(){
+  stopAuthHeartbeat();
+  if(CURRENT_USER?.role==='employee'){
+    AUTH_HEARTBEAT_TIMER=setInterval(sendAuthHeartbeat,30000);
+  }
+}
+
 function clearAuthSession(){
   localStorage.removeItem(CIC_AUTH_TOKEN_KEY);
   sessionStorage.removeItem(CIC_AUTH_TOKEN_KEY);
@@ -669,6 +735,8 @@ function clearAuthSession(){
   ADMIN_USERS_LOADED=false;
   ADMIN_USER_FILTER='all';
   clearInterval(cicPollTimer);
+  stopAuthHeartbeat();
+  if(ADMIN_LOGIN_ALERT_TIMER){clearInterval(ADMIN_LOGIN_ALERT_TIMER);ADMIN_LOGIN_ALERT_TIMER=null}
 }
 
 function applyLoggedInUser(user){
@@ -678,7 +746,7 @@ function applyLoggedInUser(user){
   $('currentUserName').textContent=user.fullName||user.email||'-';
   $('currentUserRole').textContent=user.role==='admin'?'Quản trị viên':'Nhân viên';
   $('adminNavButton').style.display=user.role==='admin'?'block':'none';
-  if(user.role==='employee')initCICEmployee();
+  if(user.role==='employee'){initCICEmployee();startAuthHeartbeat()}
   else initCICAdmin();
 }
 
@@ -690,7 +758,12 @@ async function loginAccount(event){
   const btn=$('loginSubmit');btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i>Đang đăng nhập...';
   setAuthFeedback('loginFeedback','');
   try{
-    const data=await cicFetch('/auth/login',{method:'POST',body:JSON.stringify({identifier,password})});
+    const data=await cicFetch('/auth/login',{method:'POST',body:JSON.stringify({
+      identifier,password,
+      deviceId:getBrowserDeviceId(),
+      deviceName:getBrowserDeviceName(),
+      clientType:'web'
+    })});
     localStorage.setItem(CIC_AUTH_TOKEN_KEY,data.token);
     $('loginPassword').value='';
     applyLoggedInUser(data.user);
@@ -1024,16 +1097,24 @@ function initCICAdmin(){
   $('adminPanel').style.display='block';
   showAdminView('cic');
   loadAdminRequests();
+  loadAdminLoginAlerts();
+  if(ADMIN_LOGIN_ALERT_TIMER)clearInterval(ADMIN_LOGIN_ALERT_TIMER);
+  ADMIN_LOGIN_ALERT_TIMER=setInterval(()=>{if(CURRENT_USER?.role==='admin')loadAdminLoginAlerts(true)},10000);
 }
 
 function showAdminView(view){
   if(CURRENT_USER?.role!=='admin')return;
   const isEmployees=view==='employees';
-  $('adminCicView').classList.toggle('active',!isEmployees);
+  const isAlerts=view==='alerts';
+  const isCic=!isEmployees&&!isAlerts;
+  $('adminCicView').classList.toggle('active',isCic);
   $('adminEmployeesView').classList.toggle('active',isEmployees);
-  $('adminTabCic').classList.toggle('active',!isEmployees);
+  $('adminLoginAlertsView').classList.toggle('active',isAlerts);
+  $('adminTabCic').classList.toggle('active',isCic);
   $('adminTabEmployees').classList.toggle('active',isEmployees);
+  $('adminTabLoginAlerts').classList.toggle('active',isAlerts);
   if(isEmployees&&!ADMIN_USERS_LOADED) loadAdminUsers();
+  if(isAlerts) loadAdminLoginAlerts();
 }
 
 async function loadAdminUsers(){
@@ -1090,6 +1171,7 @@ function renderAdminUsers(users){
     if(status==='pending')actions=`<button class="btn green" onclick="updateUserStatus('${id}','approve')">Duyệt</button><button class="btn red" onclick="updateUserStatus('${id}','reject')">Từ chối</button>`;
     else if(status==='active')actions=`<button class="btn red" onclick="updateUserStatus('${id}','lock')">Khóa</button>`;
     else actions=`<button class="btn green" onclick="updateUserStatus('${id}','unlock')">Mở khóa/Duyệt</button>`;
+    actions+=`<button class="btn red" onclick="deleteAdminUser('${id}','${escapeHtml(String(u.full_name||''))}','${escapeHtml(String(u.email||''))}')"><i class="fa-solid fa-trash-can"></i> Xóa</button>`;
     const created=u.created_at?new Date(u.created_at).toLocaleString('vi-VN'):'-';
     const last=u.last_login_at?new Date(u.last_login_at).toLocaleString('vi-VN'):'Chưa đăng nhập';
     return `<div class="employee-row">
@@ -1107,6 +1189,83 @@ async function updateUserStatus(id,action){
     await cicFetch('/admin/users/action',{method:'POST',body:JSON.stringify({id,action})});
     await loadAdminUsers();
   }catch(e){alert('Không cập nhật được tài khoản: '+e.message)}
+}
+
+async function deleteAdminUser(id,fullName,email){
+  const who=[fullName,email].filter(Boolean).join(' - ')||id;
+  const first=confirm(`XÓA TÀI KHOẢN?\n\n${who}\n\nTài khoản sẽ bị đăng xuất và không thể đăng nhập lại. Nhật ký Admin vẫn được giữ.`);
+  if(!first)return;
+  const second=confirm(`XÁC NHẬN LẦN CUỐI\n\nBạn chắc chắn muốn XÓA VĨNH VIỄN tài khoản:\n${who}?`);
+  if(!second)return;
+  try{
+    await cicFetch('/admin/users/delete',{method:'POST',body:JSON.stringify({id})});
+    ADMIN_USERS_LOADED=false;
+    await loadAdminUsers();
+    await loadAdminLoginAlerts(true);
+    alert('Đã xóa tài khoản: '+who);
+  }catch(e){
+    alert('Không xóa được tài khoản: '+e.message);
+  }
+}
+
+let ADMIN_LOGIN_ALERTS_CACHE=[];
+
+function formatLoginAlertPlace(ip,location){
+  const parts=[];
+  if(ip)parts.push(ip);
+  if(location)parts.push(location);
+  return parts.join(' • ')||'Không xác định';
+}
+
+async function loadAdminLoginAlerts(silent=false){
+  const box=$('adminLoginAlertList');
+  if(!box)return;
+  if(!silent)box.innerHTML='<div class="admin-empty"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải cảnh báo...</div>';
+  try{
+    const data=await cicFetch('/admin/login-alerts',{method:'GET'});
+    ADMIN_LOGIN_ALERTS_CACHE=Array.isArray(data.alerts)?data.alerts:[];
+    renderAdminLoginAlerts();
+  }catch(e){if(!silent)box.innerHTML='<div class="admin-empty">'+escapeHtml(e.message)+'</div>'}
+}
+
+function renderAdminLoginAlerts(){
+  const box=$('adminLoginAlertList');
+  if(!box)return;
+  const arr=ADMIN_LOGIN_ALERTS_CACHE||[];
+  const unread=arr.filter(x=>!x.seen_at).length;
+  $('adminLoginAlertCount').innerHTML=unread?`<span class="login-alert-badge">${unread}</span>`:'';
+  $('adminLoginAlertTitleCount').textContent=`(${arr.length}, ${unread} chưa xem)`;
+  if(!arr.length){box.innerHTML='<div class="admin-empty">Chưa có cảnh báo đăng nhập trùng.</div>';return}
+  box.innerHTML=arr.map(a=>{
+    const when=a.created_at?new Date(a.created_at).toLocaleString('vi-VN'):'-';
+    const currentPlace=formatLoginAlertPlace(a.active_ip_address,a.active_location_text);
+    const attemptPlace=formatLoginAlertPlace(a.attempt_ip_address,a.attempt_location_text);
+    return `<div class="login-alert-row ${a.seen_at?'':'unread'}">
+      <div>
+        <div class="login-alert-title"><i class="fa-solid fa-shield-halved"></i> Đã chặn đăng nhập từ thiết bị khác</div>
+        <div class="login-alert-meta"><b>${escapeHtml(a.full_name||'-')}</b> • ${escapeHtml(a.email||'-')} • ${escapeHtml(when)}</div>
+        <div class="login-alert-devices">
+          <span class="login-alert-ok">Phiên đang dùng:</span> ${escapeHtml(a.active_device_name||'Không xác định')} — ${escapeHtml(currentPlace)}<br>
+          <span class="login-alert-warn">Thiết bị thử đăng nhập:</span> ${escapeHtml(a.attempt_device_name||'Không xác định')} — ${escapeHtml(attemptPlace)}
+        </div>
+      </div>
+      <div class="login-alert-actions">${a.seen_at?'<span class="login-alert-ok"><i class="fa-solid fa-check"></i> Đã xem</span>':`<button class="btn white" style="height:36px" onclick="markLoginAlertSeen('${escapeHtml(a.id)}')">Đã xem</button>`}</div>
+    </div>`;
+  }).join('');
+}
+
+async function markLoginAlertSeen(id){
+  try{
+    await cicFetch('/admin/login-alerts/seen',{method:'POST',body:JSON.stringify({id})});
+    await loadAdminLoginAlerts(true);
+  }catch(e){alert('Không cập nhật được cảnh báo: '+e.message)}
+}
+
+async function markAllLoginAlertsSeen(){
+  try{
+    await cicFetch('/admin/login-alerts/seen',{method:'POST',body:'{}'});
+    await loadAdminLoginAlerts(true);
+  }catch(e){alert('Không cập nhật được cảnh báo: '+e.message)}
 }
 
 async function loadAdminRequests(){
