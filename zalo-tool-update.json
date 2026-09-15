@@ -1,9 +1,9 @@
 {
-    "version":  "1.7",
-    "release_name":  "ZALO TOOL v1.7",
-    "notes":  "ZALO TOOL v1.7",
-    "published_at":  "2026-09-14T22:55:00Z",
-    "asset_name":  "ZaloTool_v1.7.exe",
-    "download_url":  "https://github.com/tinhlaisuat/zalotool-releases/releases/download/v1.7/ZaloTool_v1.7.exe",
-    "sha256":  "6b26768c6465c2f90d51621d53625650679503f8fcaa02a0d2e110df7250d1c5"
+    "version":  "1.8",
+    "release_name":  "ZALO TOOL v1.8",
+    "notes":  "ZALO TOOL v1.8",
+    "published_at":  "2026-09-15T12:20:41Z",
+    "asset_name":  "ZaloTool_v1.8.exe",
+    "download_url":  "https://github.com/tinhlaisuat/zalotool-releases/releases/download/v1.8/ZaloTool_v1.8.exe",
+    "sha256":  "fba1c8d1cf66ee30771426a6c71a950c5e9dec14369968df0846d23f7b050301"
 }
