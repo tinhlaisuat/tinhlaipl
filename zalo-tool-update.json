@@ -2,7 +2,8 @@
   "version": "2.1",
   "release_name": "ZALO TOOL v2.1",
   "notes": "Cập nhật Nhật ký hoạt động: tìm kiếm, lọc và xem lịch sử.",
+  "published_at": "2026-09-16T13:06:00Z",
   "asset_name": "ZaloTool_v2.1.exe",
   "download_url": "https://github.com/tinhlaisuat/zalotool-releases/releases/download/v2.1/ZaloTool_v2.1.exe",
-  "sha256": "SHA256_EXE_THỰC_TẾ"
+  "sha256": "642454f0bd1c09f5f0d1439ef351f3ecd25b06af1927c863d20369db3e581058"
 }
