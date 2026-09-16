@@ -1,9 +1,9 @@
 {
-    "version":  "1.9",
-    "release_name":  "ZALO TOOL v1.9",
-    "notes":  "ZALO TOOL v1.9",
-    "published_at":  "2026-09-16T03:38:03Z",
-    "asset_name":  "ZaloTool_v1.9.exe",
-    "download_url":  "https://github.com/tinhlaisuat/zalotool-releases/releases/download/v1.9/ZaloTool_v1.9.exe",
-    "sha256":  "e867e33724a2e434b3850c4bb45b4c72d600914af4e68186604d375fe62f2851"
+  "version": "2.0",
+  "release_name": "ZALO TOOL v2.0",
+  "notes": "Sửa một số lỗi và tối ưu phần mềm",
+  "published_at": "2026-09-16T12:36:00Z",
+  "asset_name": "ZaloTool_v2.0.exe",
+  "download_url": "https://github.com/tinhlaisuat/zalotool-releases/releases/download/v2.0/ZaloTool_v2.0.exe",
+  "sha256": "d5ab3dad3de6698dce5533d0f6a508041c08f7429cf124cb350c436eb939b348"
 }
