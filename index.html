@@ -2,6 +2,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -121,6 +122,7 @@ padding:7px 12px;color:#14577f;font-size:14px
 .account-area{display:none;align-items:center;gap:9px;color:#fff}.account-info{text-align:right;min-width:120px}.account-info strong{display:block;font-size:12px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.account-info small{font-size:10px;color:#bbd7fa}.account-logout{width:38px;height:38px;border:1px solid #ffffff52;border-radius:9px;background:#ffffff14;color:#fff;cursor:pointer}
 .employee-management{margin-bottom:24px;padding-bottom:20px;border-bottom:2px solid #e7eef6}.employee-list{display:grid;gap:10px;margin-top:12px}.employee-row{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;border:1px solid #dce5ee;border-radius:11px;padding:13px;background:#fff}.employee-name{font-weight:800;color:#123d70}.employee-meta{font-size:12px;color:#6b7f96;margin-top:4px;line-height:1.55}.employee-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:7px}.employee-actions .btn{height:36px;padding:0 12px;font-size:12px}.status-pill{display:inline-block;margin-top:6px;padding:4px 8px;border-radius:14px;font-size:10px;font-weight:800}.status-pending{background:#fff4df;color:#9b5d00}.status-active{background:#eafaf1;color:#08763e}.status-rejected,.status-locked{background:#fff0f0;color:#c62828}
 .admin-employee-line{margin-top:5px;font-size:12px;color:#075fc8;font-weight:700}
+.screen-reset-state{display:inline-flex;align-items:center;gap:5px;margin-top:7px;padding:4px 9px;border-radius:14px;font-size:10px;font-weight:800;background:#eef5fc;color:#45617d}.screen-reset-state.requested{background:#fff4df;color:#9b5d00}.screen-reset-state.approved{background:#eaf4ff;color:#0868d9}.screen-reset-state.acknowledged{background:#eafaf1;color:#08763e}.screen-reset-btn{background:#6f42c1;color:#fff}.screen-reset-btn:disabled{opacity:.6;cursor:not-allowed}
 @media(max-width:1100px){.account-info{display:none}.header{padding-left:2%;padding-right:2%;gap:12px}.nav button{min-width:130px;font-size:14px}}
 @media(max-width:650px){.auth-card{padding:20px 16px}.employee-row{grid-template-columns:1fr}.employee-actions{justify-content:flex-start}.account-area{width:100%;justify-content:center}.account-info{display:block;text-align:left}.header{gap:10px}}
 
@@ -1171,16 +1173,38 @@ function renderAdminUsers(users){
     if(status==='pending')actions=`<button class="btn green" onclick="updateUserStatus('${id}','approve')">Duyệt</button><button class="btn red" onclick="updateUserStatus('${id}','reject')">Từ chối</button>`;
     else if(status==='active')actions=`<button class="btn red" onclick="updateUserStatus('${id}','lock')">Khóa</button>`;
     else actions=`<button class="btn green" onclick="updateUserStatus('${id}','unlock')">Mở khóa/Duyệt</button>`;
+    const resetStatus=String(u.screenLockResetStatus||u.screen_lock_reset_status||'none');
+    const resetLabels={none:'Chưa có yêu cầu',requested:'Đang chờ Admin reset',approved:'Đã cho phép reset',acknowledged:'Tool đã nhận reset'};
+    const resetRequested=resetStatus==='requested';
+    actions+=`<button class="btn screen-reset-btn" onclick="resetScreenLock('${id}','${escapeHtml(String(u.full_name||''))}','${escapeHtml(String(u.email||''))}')"><i class="fa-solid fa-unlock-keyhole"></i> ${resetRequested?'Duyệt reset khóa màn hình':'Reset khóa màn hình'}</button>`;
     actions+=`<button class="btn red" onclick="deleteAdminUser('${id}','${escapeHtml(String(u.full_name||''))}','${escapeHtml(String(u.email||''))}')"><i class="fa-solid fa-trash-can"></i> Xóa</button>`;
     const created=u.created_at?new Date(u.created_at).toLocaleString('vi-VN'):'-';
     const last=u.last_login_at?new Date(u.last_login_at).toLocaleString('vi-VN'):'Chưa đăng nhập';
     return `<div class="employee-row">
       <div><div class="employee-name">${escapeHtml(u.full_name||'-')}</div>
       <div class="employee-meta">${escapeHtml(u.email||'-')}<br>Đăng ký: ${escapeHtml(created)} • Đăng nhập gần nhất: ${escapeHtml(last)}</div>
-      <span class="status-pill status-${escapeHtml(status)}">${escapeHtml(labels[status]||status)}</span></div>
+      <span class="status-pill status-${escapeHtml(status)}">${escapeHtml(labels[status]||status)}</span><br>
+      <span class="screen-reset-state ${escapeHtml(resetStatus)}"><i class="fa-solid fa-display"></i> Khóa màn hình: ${escapeHtml(resetLabels[resetStatus]||resetStatus)}</span></div>
       <div class="employee-actions">${actions}</div>
     </div>`;
   }).join('');
+}
+
+async function resetScreenLock(id,fullName,email){
+  const who=[fullName,email].filter(Boolean).join(' - ')||id;
+  const user=ADMIN_USERS_CACHE.find(x=>String(x.id)===String(id));
+  const resetStatus=String(user?.screenLockResetStatus||user?.screen_lock_reset_status||'none');
+  const msg=resetStatus==='requested'
+    ? `Nhân viên đang yêu cầu đặt lại mật khẩu Che màn hình.\n\n${who}\n\nCho phép reset ngay?`
+    : `RESET KHÓA MÀN HÌNH?\n\n${who}\n\nSau khi ZALO TOOL nhận lệnh, mật khẩu Che màn hình cũ sẽ được xóa và nhân viên phải tạo mật khẩu mới.`;
+  if(!confirm(msg))return;
+  try{
+    const data=await cicFetch('/admin/screen-lock/reset',{method:'POST',body:JSON.stringify({id})});
+    await loadAdminUsers();
+    alert(data.message||'Đã cho phép đặt lại mật khẩu Che màn hình.');
+  }catch(e){
+    alert('Không reset được khóa màn hình: '+e.message);
+  }
 }
 
 async function updateUserStatus(id,action){
