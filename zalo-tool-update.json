@@ -1,9 +1,9 @@
 {
-  "version": "3.1.8",
-  "release_name": "ZALO TOOL v3.1.8",
-  "notes": "Sửa lỗi đứng tại bước gửi lời mời kết bạn; cải thiện nhận diện và bấm nút Kết bạn; thêm timeout tránh treo Zalo; nếu kết bạn không thành công vẫn tiếp tục gửi tin nhắn; hiển thị rõ Zalo đang xử lý thay cho mã Worker; cải thiện trạng thái xử lý từng tài khoản.",
-  "published_at": "2026-09-30T19:26:00+07:00",
-  "asset_name": "ZaloTool_v3.1.8.exe",
-  "download_url": "https://github.com/tinhlaisuat/zalotool-releases/releases/download/v3.1.8/ZaloTool_v3.1.8.exe",
-  "sha256": "05f29ac71e8688c0dfdc852602e8c2aab4df81e403a6316f2ef7ecffcb0b2d6e"
+  "version": "3.1.9",
+  "release_name": "ZALO TOOL v3.1.9",
+  "notes": "Sửa thời gian chờ khách tiếp theo chạy chính xác theo thời gian thực; thời gian vẫn được chọn ngẫu nhiên theo khoảng tối thiểu và tối đa do người dùng cài đặt; khắc phục tình trạng thời gian chờ thực tế kéo dài hơn cấu hình; bỏ dòng thời gian chờ trùng lặp bên ngoài khung trạng thái từng Zalo.",
+  "published_at": "2026-09-30T21:00:00+07:00",
+  "asset_name": "ZaloTool_v3.1.9.exe",
+  "download_url": "https://github.com/tinhlaisuat/zalotool-releases/releases/download/v3.1.9/ZaloTool_v3.1.9.exe",
+  "sha256": "eac42175a0c54071eed4a23a19a7da4a5a1a3434016699f84100f6f58d359755"
 }
