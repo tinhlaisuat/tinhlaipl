@@ -1,9 +1,9 @@
 {
-  "version": "3.1.5",
-  "release_name": "ZALO TOOL v3.1.5",
-  "notes": "Sửa lỗi đếm sai số Zalo khi mất mạng; gộp thông báo khi nhiều Zalo cùng kết nối lại; Zalo mất mạng riêng vẫn thông báo riêng; bỏ cảnh báo --no-sandbox trên Chromium, Google Chrome và Microsoft Edge.",
-  "published_at": "2026-09-29T13:35:00+07:00",
-  "asset_name": "ZaloTool_v3.1.5.exe",
-  "download_url": "https://github.com/tinhlaisuat/zalotool-releases/releases/download/v3.1.5/ZaloTool_v3.1.5.exe",
-  "sha256": "0ec489ecfcd6404dd645db07fa7c2d34a28a1775ab65a05e9686f2fcecea72b9"
+  "version": "3.1.8",
+  "release_name": "ZALO TOOL v3.1.8",
+  "notes": "Sửa lỗi đứng tại bước gửi lời mời kết bạn; cải thiện nhận diện và bấm nút Kết bạn; thêm timeout tránh treo Zalo; nếu kết bạn không thành công vẫn tiếp tục gửi tin nhắn; hiển thị rõ Zalo đang xử lý thay cho mã Worker; cải thiện trạng thái xử lý từng tài khoản.",
+  "published_at": "2026-09-30T19:26:00+07:00",
+  "asset_name": "ZaloTool_v3.1.8.exe",
+  "download_url": "https://github.com/tinhlaisuat/zalotool-releases/releases/download/v3.1.8/ZaloTool_v3.1.8.exe",
+  "sha256": "05f29ac71e8688c0dfdc852602e8c2aab4df81e403a6316f2ef7ecffcb0b2d6e"
 }
