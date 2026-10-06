@@ -1,9 +1,9 @@
 {
-  "version": "3.2.9",
-  "release_name": "ZALO TOOL v3.2.9",
-  "notes": "Cập nhật giao diện đăng nhập mới chuyên nghiệp và trực quan hơn; tối ưu hiển thị trên màn hình; cập nhật hình nền ZALO TOOL; giữ nguyên cơ chế vận hành ổn định của hệ thống.",
-  "published_at": "2026-10-05T11:50:00+07:00",
-  "asset_name": "ZaloTool_v3.2.9.exe",
-  "download_url": "https://github.com/tinhlaisuat/zalotool-releases/releases/download/v3.2.9/ZaloTool_v3.2.9.exe",
-  "sha256": "d3c4dabcfa8014dcd8979683c03e5a09ead618736dc9c77d0f8c5eec19f3b6b6"
+  "version": "3.3.0",
+  "release_name": "ZALO TOOL v3.3.0",
+  "notes": "Bổ sung cơ chế tự động dừng riêng tài khoản Zalo khi phát hiện cảnh báo không thể nhắn tin cho người lạ; ghi nhận vào Nhật ký hoạt động và phát cảnh báo qua Trung tâm thông báo.",
+  "published_at": "2026-10-06T06:50:00+07:00",
+  "asset_name": "ZaloTool_v3.3.0.exe",
+  "download_url": "https://github.com/tinhlaisuat/zalotool-releases/releases/download/v3.3.0/ZaloTool_v3.3.0.exe",
+  "sha256": "327235bedaf6a683141b2c3513cf57459b8f737a79feb1239ae9beaf85d98f02"
 }
