@@ -3,6 +3,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -1273,7 +1274,10 @@ function renderAdminLoginAlerts(){
           <span class="login-alert-warn">Thiết bị thử đăng nhập:</span> ${escapeHtml(a.attempt_device_name||'Không xác định')} — ${escapeHtml(attemptPlace)}
         </div>
       </div>
-      <div class="login-alert-actions">${a.seen_at?'<span class="login-alert-ok"><i class="fa-solid fa-check"></i> Đã xem</span>':`<button class="btn white" style="height:36px" onclick="markLoginAlertSeen('${escapeHtml(a.id)}')">Đã xem</button>`}</div>
+      <div class="login-alert-actions" style="flex-wrap:wrap;justify-content:flex-end">
+        ${a.seen_at?'<span class="login-alert-ok"><i class="fa-solid fa-check"></i> Đã xem</span>':`<button class="btn white" style="height:36px" onclick="markLoginAlertSeen('${escapeHtml(a.id)}')">Đã xem</button>`}
+        <button class="btn green" style="height:36px" onclick="allowLoginNewDevice('${escapeHtml(a.id)}','${escapeHtml(String(a.full_name||''))}','${escapeHtml(String(a.attempt_device_name||''))}')"><i class="fa-solid fa-laptop-file"></i> Cho phép thiết bị mới</button>
+      </div>
     </div>`;
   }).join('');
 }
@@ -1290,6 +1294,23 @@ async function markAllLoginAlertsSeen(){
     await cicFetch('/admin/login-alerts/seen',{method:'POST',body:'{}'});
     await loadAdminLoginAlerts(true);
   }catch(e){alert('Không cập nhật được cảnh báo: '+e.message)}
+}
+
+async function allowLoginNewDevice(alertId,fullName,deviceName){
+  const who=fullName||'nhân viên này';
+  const device=deviceName||'thiết bị mới';
+  const ok=confirm(`CHO PHÉP THIẾT BỊ MỚI?\n\nNhân viên: ${who}\nThiết bị mới: ${device}\n\nPhiên đang đăng nhập trên thiết bị cũ sẽ bị hủy. Sau đó nhân viên cần đăng nhập lại trên thiết bị mới.`);
+  if(!ok)return;
+  try{
+    const data=await cicFetch('/admin/login-alerts/allow-device',{
+      method:'POST',
+      body:JSON.stringify({alertId})
+    });
+    await loadAdminLoginAlerts(true);
+    alert(data.message||'Đã cho phép thiết bị mới. Nhân viên có thể đăng nhập lại.');
+  }catch(e){
+    alert('Không cho phép được thiết bị mới: '+e.message);
+  }
 }
 
 async function loadAdminRequests(){
