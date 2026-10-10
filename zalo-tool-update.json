@@ -1,8 +1,9 @@
+
 {
-  "version": "3.3.1",
-  "release_name": "ZALO TOOL V3.3.1",
-  "notes": "Sửa nhận nhầm cảnh báo cũ khi Zalo chặn nhắn tin người lạ; hỗ trợ quản lý Data độc lập từng Zalo; bỏ Quét bạn bè và Quét nhóm khỏi giao diện; Activity Log tự động giữ tối đa 500 bản ghi mới nhất; tối ưu hoạt động an toàn; cập nhật Hướng dẫn sử dụng V3.3.1.",
-  "asset_name": "ZaloTool_v3.3.1.exe",
-  "download_url": "https://github.com/tinhlaisuat/zalotool-releases/releases/download/v3.3.1/ZaloTool_v3.3.1.exe",
-  "sha256": "099e7c28f7642792074eab45adb4c22335579e60ab5d0d5c3ba3444747bbf4c4"
+  "version": "3.3.6",
+  "release_name": "ZALO TOOL V3.3.6",
+  "notes": "Cập nhật ZALO TOOL V3.3.6; cải thiện quản lý nhóm Default, A, B, C; lưu cấu hình và nội dung tin nhắn riêng cho từng nhóm; hỗ trợ phân công tài khoản Zalo vào từng nhóm; tối ưu hoạt động và khắc phục lỗi từ các phiên bản trước.",
+  "asset_name": "ZaloTool_v3.3.6.exe",
+  "download_url": "https://github.com/tinhlaisuat/zalotool-releases/releases/download/v3.3.6/ZaloTool_v3.3.6.exe",
+  "sha256": "b6ae37a0dccc04608099b48fa8e3eb4297cb5eb6b7da4860e811629bbced73ac"
 }
