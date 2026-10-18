@@ -143,6 +143,12 @@ padding:7px 12px;color:#14577f;font-size:14px
 
 
 .login-alert-list{display:flex;flex-direction:column;gap:10px}.login-alert-row{border:1px solid #f0d7d7;background:#fffafa;border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.login-alert-row.unread{border-color:#ef9a9a;background:#fff2f2;box-shadow:0 2px 10px #d9302510}.login-alert-title{font-weight:800;color:#b42318;margin-bottom:6px}.login-alert-meta{font-size:12px;color:#61728a;line-height:1.7}.login-alert-devices{font-size:13px;color:#243957;margin-top:6px;line-height:1.7}.login-alert-actions{display:flex;gap:8px;align-items:center;white-space:nowrap}.login-alert-badge{display:inline-flex;min-width:20px;height:20px;padding:0 6px;border-radius:10px;align-items:center;justify-content:center;background:#e53935;color:#fff;font-size:11px;font-weight:800;margin-left:5px}.login-alert-ok{color:#0a8f49;font-weight:700}.login-alert-warn{color:#d93025;font-weight:800}
+/* V3.3.12: tình trạng TOOL độc lập với trạng thái duyệt tài khoản */
+.tool-presence{display:inline-flex;align-items:center;gap:5px;border-radius:20px;padding:5px 9px;
+ font-size:11px;font-weight:750;margin-top:6px;margin-right:5px;background:#e8eef7;color:#485b70}
+.tool-presence.online{background:#e5f9eb;color:#117a39}
+.tool-presence.offline{background:#eef2f6;color:#697787}
+.tool-presence i{font-size:7px}
 </style>
 </head>
 <body>
@@ -407,7 +413,9 @@ Từ <strong id="idcardMonthlyMin">0 VND</strong> đến <strong id="idcardMonth
           <div class="employee-filterbar">
             <button class="employee-filter-btn active" data-status="all" onclick="setAdminUserFilter('all',this)">Tất cả <span id="empCountAll"></span></button>
             <button class="employee-filter-btn" data-status="pending" onclick="setAdminUserFilter('pending',this)">Chờ phê duyệt <span id="empCountPending"></span></button>
-            <button class="employee-filter-btn" data-status="active" onclick="setAdminUserFilter('active',this)">Đang hoạt động <span id="empCountActive"></span></button>
+            <button class="employee-filter-btn" data-status="active" onclick="setAdminUserFilter('active',this)">Đã duyệt tài khoản <span id="empCountActive"></span></button>
+            <button class="employee-filter-btn" data-status="tool_online" onclick="setAdminUserFilter('tool_online',this)">ZALO TOOL đang hoạt động <span id="empCountOnline"></span></button>
+            <button class="employee-filter-btn" data-status="tool_offline" onclick="setAdminUserFilter('tool_offline',this)">ZALO TOOL không hoạt động <span id="empCountOffline"></span></button>
             <button class="employee-filter-btn" data-status="locked" onclick="setAdminUserFilter('locked',this)">Bị khóa <span id="empCountLocked"></span></button>
           </div>
 
@@ -415,6 +423,7 @@ Từ <strong id="idcardMonthlyMin">0 VND</strong> đến <strong id="idcardMonth
             <input id="adminUserSearch" type="search" placeholder="Tìm theo họ tên, email hoặc mã nhân viên..." oninput="renderAdminUsers()">
           </div>
           <div id="adminUserSummary" class="employee-summary"></div>
+           <div class="employee-summary">Trạng thái ZALO TOOL cập nhật tự động khi trang đang mở; nếu máy mất kết nối, trạng thái có thể trễ khoảng 90 giây.</div>
 
           <div id="adminUserList" class="employee-list">
             <div class="admin-empty">Bấm Quản lý nhân viên để tải danh sách.</div>
@@ -426,8 +435,8 @@ Từ <strong id="idcardMonthlyMin">0 VND</strong> đến <strong id="idcardMonth
         <div class="employee-management">
           <div class="admin-toolbar">
             <div>
-              <strong>Cảnh báo đăng nhập trùng <span id="adminLoginAlertTitleCount" style="font-size:12px;color:#6b7f96"></span></strong>
-              <div style="font-size:12px;color:#718399;margin-top:3px">Một tài khoản nhân viên chỉ được phép có một phiên hoạt động. Lần đăng nhập từ thiết bị khác sẽ bị chặn và ghi tại đây.</div>
+              <strong>Cảnh báo thiết bị lạ <span id="adminLoginAlertTitleCount" style="font-size:12px;color:#6b7f96"></span></strong>
+              <div style="font-size:12px;color:#718399;margin-top:3px">Đăng nhập từ thiết bị chưa được duyệt luôn bị chặn, kể cả khi máy cũ đã tắt. Chỉ Admin có thể duyệt chuyển sang thiết bị mới.</div>
             </div>
             <div style="display:flex;gap:8px">
               <button class="btn white" style="height:40px" onclick="loadAdminLoginAlerts()"><i class="fa-solid fa-rotate"></i>Làm mới</button>
@@ -1102,7 +1111,11 @@ function initCICAdmin(){
   loadAdminRequests();
   loadAdminLoginAlerts();
   if(ADMIN_LOGIN_ALERT_TIMER)clearInterval(ADMIN_LOGIN_ALERT_TIMER);
-  ADMIN_LOGIN_ALERT_TIMER=setInterval(()=>{if(CURRENT_USER?.role==='admin')loadAdminLoginAlerts(true)},10000);
+  ADMIN_LOGIN_ALERT_TIMER=setInterval(()=>{
+    if(CURRENT_USER?.role!=='admin'||document.visibilityState!=='visible')return;
+    loadAdminLoginAlerts(true);
+    if(ADMIN_USERS_LOADED && $('adminEmployeesView').classList.contains('active'))loadAdminUsers(true);
+  },10000);
 }
 
 function showAdminView(view){
@@ -1116,13 +1129,13 @@ function showAdminView(view){
   $('adminTabCic').classList.toggle('active',isCic);
   $('adminTabEmployees').classList.toggle('active',isEmployees);
   $('adminTabLoginAlerts').classList.toggle('active',isAlerts);
-  if(isEmployees&&!ADMIN_USERS_LOADED) loadAdminUsers();
+  if(isEmployees) loadAdminUsers(ADMIN_USERS_LOADED);
   if(isAlerts) loadAdminLoginAlerts();
 }
 
-async function loadAdminUsers(){
+async function loadAdminUsers(silent=false){
   const box=$('adminUserList');
-  box.innerHTML='<div class="admin-empty"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải tài khoản...</div>';
+  if(!silent)box.innerHTML='<div class="admin-empty"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải tài khoản...</div>';
   try{
     const data=await cicFetch('/admin/users',{method:'GET'});
     ADMIN_USERS_CACHE=data.users||[];
@@ -1136,6 +1149,12 @@ function setAdminUserFilter(status,btn){
   document.querySelectorAll('.employee-filter-btn').forEach(x=>x.classList.remove('active'));
   if(btn)btn.classList.add('active');
   renderAdminUsers();
+}
+
+function formatAdminDate(value){
+  if(!value)return '-';
+  const dt=new Date(value);
+  return Number.isFinite(dt.getTime())?dt.toLocaleString('vi-VN'):'-';
 }
 
 function renderAdminUsers(users){
@@ -1154,22 +1173,28 @@ function renderAdminUsers(users){
   $('empCountPending').textContent=`(${counts.pending})`;
   $('empCountActive').textContent=`(${counts.active})`;
   $('empCountLocked').textContent=`(${counts.locked})`;
+  $('empCountOnline').textContent=`(${all.filter(u=>Boolean(u.toolOnline)).length})`;
+  $('empCountOffline').textContent=`(${all.filter(u=>u.status==='active'&&!u.toolOnline).length})`;
 
   const q=String($('adminUserSearch')?.value||'').trim().toLowerCase();
   let filtered=all.filter(u=>{
     const status=String(u.status||'pending');
-    if(ADMIN_USER_FILTER!=='all'&&status!==ADMIN_USER_FILTER)return false;
+    if(ADMIN_USER_FILTER==='tool_online'&&!u.toolOnline)return false;
+    if(ADMIN_USER_FILTER==='tool_offline'&&(status!=='active'||u.toolOnline))return false;
+    if(!['all','tool_online','tool_offline'].includes(ADMIN_USER_FILTER)&&status!==ADMIN_USER_FILTER)return false;
     if(!q)return true;
-    return [u.full_name,u.email].some(v=>String(v||'').toLowerCase().includes(q));
+    return [u.fullName??u.full_name,u.email,u.employeeCode??u.employee_code].some(v=>String(v||'').toLowerCase().includes(q));
   });
-  $('adminUserSummary').textContent=`Đang hiển thị ${filtered.length}/${all.length} tài khoản`;
+  const onlineCount=all.filter(u=>Boolean(u.toolOnline)).length;
+  $('adminUserSummary').textContent=`Đang hiển thị ${filtered.length}/${all.length} tài khoản • ${onlineCount} ZALO TOOL đang chạy`;
 
   if(!all.length){box.innerHTML='<div class="admin-empty">Chưa có tài khoản nhân viên.</div>';return}
   if(!filtered.length){box.innerHTML='<div class="admin-empty">Không có tài khoản phù hợp bộ lọc.</div>';return}
 
-  const labels={pending:'Chờ phê duyệt',active:'Đang hoạt động',rejected:'Đã từ chối',locked:'Bị khóa'};
+  const labels={pending:'Chờ phê duyệt',active:'Đã duyệt tài khoản',rejected:'Đã từ chối',locked:'Bị khóa'};
   box.innerHTML=filtered.map(u=>{
     const id=escapeHtml(u.id),status=String(u.status||'pending');
+    const fullName=String(u.fullName??u.full_name??'');
     let actions='';
     if(status==='pending')actions=`<button class="btn green" onclick="updateUserStatus('${id}','approve')">Duyệt</button><button class="btn red" onclick="updateUserStatus('${id}','reject')">Từ chối</button>`;
     else if(status==='active')actions=`<button class="btn red" onclick="updateUserStatus('${id}','lock')">Khóa</button>`;
@@ -1177,14 +1202,23 @@ function renderAdminUsers(users){
     const resetStatus=String(u.screenLockResetStatus||u.screen_lock_reset_status||'none');
     const resetLabels={none:'Chưa có yêu cầu',requested:'Đang chờ Admin reset',approved:'Đã cho phép reset',acknowledged:'Tool đã nhận reset'};
     const resetRequested=resetStatus==='requested';
-    actions+=`<button class="btn screen-reset-btn" onclick="resetScreenLock('${id}','${escapeHtml(String(u.full_name||''))}','${escapeHtml(String(u.email||''))}')"><i class="fa-solid fa-unlock-keyhole"></i> ${resetRequested?'Duyệt reset khóa màn hình':'Reset khóa màn hình'}</button>`;
-    actions+=`<button class="btn red" onclick="deleteAdminUser('${id}','${escapeHtml(String(u.full_name||''))}','${escapeHtml(String(u.email||''))}')"><i class="fa-solid fa-trash-can"></i> Xóa</button>`;
-    const created=u.created_at?new Date(u.created_at).toLocaleString('vi-VN'):'-';
-    const last=u.last_login_at?new Date(u.last_login_at).toLocaleString('vi-VN'):'Chưa đăng nhập';
+    actions+=`<button class="btn screen-reset-btn" onclick="resetScreenLock('${id}','${escapeHtml(fullName)}','${escapeHtml(String(u.email||''))}')"><i class="fa-solid fa-unlock-keyhole"></i> ${resetRequested?'Duyệt reset khóa màn hình':'Reset khóa màn hình'}</button>`;
+    actions+=`<button class="btn red" onclick="deleteAdminUser('${id}','${escapeHtml(fullName)}','${escapeHtml(String(u.email||''))}')"><i class="fa-solid fa-trash-can"></i> Xóa</button>`;
+    const created=formatAdminDate(u.createdAt??u.created_at);
+    const lastValue=u.lastLoginAt??u.last_login_at;
+    const last=lastValue?formatAdminDate(lastValue):'Chưa đăng nhập';
+    const lastTool=u.lastToolLoginAt?formatAdminDate(u.lastToolLoginAt):'Chưa ghi nhận';
+    const toolOnline=Boolean(u.toolOnline);
+    const seen=u.toolLastSeenAt?formatAdminDate(u.toolLastSeenAt):'Chưa có';
+    const approvedDevice=u.approvedDeviceName||'Chưa phê duyệt';
+    const activity='<span class="tool-presence '+(toolOnline?'online':'offline')+'"><i class="fa-solid fa-circle"></i> '+
+      (toolOnline?'ZALO TOOL đang hoạt động':'ZALO TOOL không hoạt động')+'</span>';
     return `<div class="employee-row">
-      <div><div class="employee-name">${escapeHtml(u.full_name||'-')}</div>
-      <div class="employee-meta">${escapeHtml(u.email||'-')}<br>Đăng ký: ${escapeHtml(created)} • Đăng nhập gần nhất: ${escapeHtml(last)}</div>
-      <span class="status-pill status-${escapeHtml(status)}">${escapeHtml(labels[status]||status)}</span><br>
+      <div><div class="employee-name">${escapeHtml(fullName||'-')}</div>
+      <div class="employee-meta">${escapeHtml(u.email||'-')}<br>Đăng ký: ${escapeHtml(created)} • Đăng nhập hệ thống gần nhất: ${escapeHtml(last)}<br>ZALO TOOL đăng nhập gần nhất: ${escapeHtml(lastTool)}</div>
+      <span class="status-pill status-${escapeHtml(status)}">${escapeHtml(labels[status]||status)}</span>
+      ${activity}<br>
+      <span class="employee-meta">Máy được duyệt: ${escapeHtml(approvedDevice)} • Phản hồi TOOL gần nhất: ${escapeHtml(seen)}</span><br>
       <span class="screen-reset-state ${escapeHtml(resetStatus)}"><i class="fa-solid fa-display"></i> Khóa màn hình: ${escapeHtml(resetLabels[resetStatus]||resetStatus)}</span></div>
       <div class="employee-actions">${actions}</div>
     </div>`;
@@ -1260,23 +1294,30 @@ function renderAdminLoginAlerts(){
   const unread=arr.filter(x=>!x.seen_at).length;
   $('adminLoginAlertCount').innerHTML=unread?`<span class="login-alert-badge">${unread}</span>`:'';
   $('adminLoginAlertTitleCount').textContent=`(${arr.length}, ${unread} chưa xem)`;
-  if(!arr.length){box.innerHTML='<div class="admin-empty">Chưa có cảnh báo đăng nhập trùng.</div>';return}
+  if(!arr.length){box.innerHTML='<div class="admin-empty">Chưa có cảnh báo thiết bị lạ.</div>';return}
   box.innerHTML=arr.map(a=>{
-    const when=a.created_at?new Date(a.created_at).toLocaleString('vi-VN'):'-';
+    const when=formatAdminDate(a.created_at);
     const currentPlace=formatLoginAlertPlace(a.active_ip_address,a.active_location_text);
     const attemptPlace=formatLoginAlertPlace(a.attempt_ip_address,a.attempt_location_text);
+    const deviceState=String(a.device_request_status||'');
+    const actionButtons=deviceState==='pending'
+      ? `<button class="btn green" style="height:36px" data-alert-id="${escapeHtml(a.id)}" data-full-name="${escapeHtml(String(a.full_name||''))}" data-device-name="${escapeHtml(String(a.attempt_device_name||''))}" onclick="allowLoginNewDevice(this.dataset.alertId,this.dataset.fullName,this.dataset.deviceName)"><i class="fa-solid fa-laptop-file"></i> Phê duyệt đúng máy này</button>
+         <button class="btn red" style="height:36px" data-alert-id="${escapeHtml(a.id)}" onclick="rejectLoginNewDevice(this.dataset.alertId)">Từ chối</button>`
+      : deviceState==='approved'?'<span class="login-alert-ok">Đã duyệt thiết bị</span>'
+      : deviceState==='rejected'?'<span class="login-alert-warn">Đã từ chối</span>'
+      : '<span class="login-alert-warn">Cảnh báo cũ — cần yêu cầu đăng nhập mới để duyệt chính xác</span>';
     return `<div class="login-alert-row ${a.seen_at?'':'unread'}">
       <div>
-        <div class="login-alert-title"><i class="fa-solid fa-shield-halved"></i> Đã chặn đăng nhập từ thiết bị khác</div>
+        <div class="login-alert-title"><i class="fa-solid fa-shield-halved"></i> Yêu cầu đăng nhập từ thiết bị lạ</div>
         <div class="login-alert-meta"><b>${escapeHtml(a.full_name||'-')}</b> • ${escapeHtml(a.email||'-')} • ${escapeHtml(when)}</div>
         <div class="login-alert-devices">
-          <span class="login-alert-ok">Phiên đang dùng:</span> ${escapeHtml(a.active_device_name||'Không xác định')} — ${escapeHtml(currentPlace)}<br>
+          <span class="login-alert-ok">Thiết bị đã duyệt:</span> ${escapeHtml(a.active_device_name||'Không xác định')} — ${escapeHtml(currentPlace)}<br>
           <span class="login-alert-warn">Thiết bị thử đăng nhập:</span> ${escapeHtml(a.attempt_device_name||'Không xác định')} — ${escapeHtml(attemptPlace)}
         </div>
       </div>
       <div class="login-alert-actions" style="flex-wrap:wrap;justify-content:flex-end">
         ${a.seen_at?'<span class="login-alert-ok"><i class="fa-solid fa-check"></i> Đã xem</span>':`<button class="btn white" style="height:36px" onclick="markLoginAlertSeen('${escapeHtml(a.id)}')">Đã xem</button>`}
-        <button class="btn green" style="height:36px" onclick="allowLoginNewDevice('${escapeHtml(a.id)}','${escapeHtml(String(a.full_name||''))}','${escapeHtml(String(a.attempt_device_name||''))}')"><i class="fa-solid fa-laptop-file"></i> Cho phép thiết bị mới</button>
+        ${actionButtons}
       </div>
     </div>`;
   }).join('');
@@ -1311,6 +1352,17 @@ async function allowLoginNewDevice(alertId,fullName,deviceName){
   }catch(e){
     alert('Không cho phép được thiết bị mới: '+e.message);
   }
+}
+
+async function rejectLoginNewDevice(alertId){
+  if(!confirm('TỪ CHỐI THIẾT BỊ MỚI?\n\nNhân viên sẽ không được đăng nhập trên thiết bị này.'))return;
+  try{
+    const data=await cicFetch('/admin/login-alerts/reject-device',{
+      method:'POST',body:JSON.stringify({alertId})
+    });
+    await loadAdminLoginAlerts(true);
+    alert(data.message||'Đã từ chối yêu cầu.');
+  }catch(e){alert('Không từ chối được: '+e.message)}
 }
 
 async function loadAdminRequests(){
