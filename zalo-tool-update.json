@@ -1,9 +1,9 @@
 
 {
-  "version": "3.3.6",
-  "release_name": "ZALO TOOL V3.3.6",
-  "notes": "Cập nhật ZALO TOOL V3.3.6; cải thiện quản lý nhóm Default, A, B, C; lưu cấu hình và nội dung tin nhắn riêng cho từng nhóm; hỗ trợ phân công tài khoản Zalo vào từng nhóm; tối ưu hoạt động và khắc phục lỗi từ các phiên bản trước.",
-  "asset_name": "ZaloTool_v3.3.6.exe",
-  "download_url": "https://github.com/tinhlaisuat/zalotool-releases/releases/download/v3.3.6/ZaloTool_v3.3.6.exe",
-  "sha256": "b6ae37a0dccc04608099b48fa8e3eb4297cb5eb6b7da4860e811629bbced73ac"
+  "version": "3.3.7",
+  "release_name": "ZALO TOOL V3.3.7",
+  "notes": "Cập nhật ZALO TOOL V3.3.7; tối ưu hiệu năng, cải thiện độ ổn định, xử lý lỗi đăng xuất và rút gọn nội dung Hướng dẫn.",
+  "asset_name": "ZaloTool_v3.3.7.exe",
+  "download_url": "https://github.com/tinhlaisuat/zalotool-releases/releases/download/v3.3.7/ZaloTool_v3.3.7.exe",
+  "sha256": "b77803f3ae219e0b9240ad613f587cc129f81a756d76430aafc5e3b7a1570bce"
 }
